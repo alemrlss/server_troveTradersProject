@@ -49,5 +49,12 @@ export class Users {
 
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Posts' }] })
   posts: Posts[];
+
+  @Prop({ default: false })
+  isVerify: boolean;
+
+  @Prop({ default: 'defaultProfile.png' })
+  imageProfile: string;
 }
+
 export const UsersSchema = SchemaFactory.createForClass(Users);
