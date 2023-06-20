@@ -15,8 +15,8 @@ import { join } from 'path';
       },
     ]),
     ServeStaticModule.forRoot({
-      // rootPath: join(process.cwd(), 'src', 'users', 'imagesProfile'),
-      rootPath: join(__dirname, 'imagesProfile'),
+      rootPath: join(process.cwd(), 'src', 'users', 'imagesProfile'),
+      //rootPath: join(__dirname, 'imagesProfile'),
       //Esta en ruta absoulta. Por ende en el servidor no funcionara este endPoint de fotos de perfil estaticas.
       //rootPath: join(__dirname, 'imagesProfile') (Este codigo toma el __dirname desde la carpeta dist.)
       serveRoot: '/image/profile',
@@ -26,4 +26,8 @@ import { join } from 'path';
   providers: [UsersService],
   exports: [UsersService, MongooseModule],
 })
-export class UsersModule {}
+export class UsersModule {
+  constructor() {
+    console.log(`El dirname es: ${__dirname}`);
+  }
+}

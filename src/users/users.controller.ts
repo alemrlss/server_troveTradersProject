@@ -17,12 +17,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
 import { PostsService } from 'src/posts/posts.service';
 import { Users } from './schema/users.schema';
-import { UpdateImageProfileDto } from './dto/update-imageProfile';
 import { diskStorage } from 'multer';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { fileFilter, renameImage } from 'src/users/helpers/users.helpers';
 import * as fs from 'fs';
 import { join } from 'path';
+import { UpdateUserDto } from 'src/users/dto/UpdateUserDto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -48,12 +48,19 @@ export class UsersController {
     return this.usersService.findPostById(id);
   }
 
+  //update profile image
   @Post(':id/imageProfile')
   @UseInterceptors(
     FileInterceptor('imageProfile', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          const destinationFolder = join(__dirname, 'imagesProfile');
+          // const destinationFolder = join(__dirname, 'imagesProfile');
+          const destinationFolder = join(
+            process.cwd(),
+            'src',
+            'users',
+            'imagesProfile',
+          );
           fs.mkdirSync(destinationFolder, { recursive: true });
           cb(null, destinationFolder);
         },
@@ -67,6 +74,14 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return await this.usersService.uploadProfileImage(id, file);
+  }
+
+  @Put(':id')
+  async updateUser(
+    @Param('id') id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return await this.usersService.updateUser(id, updateUserDto);
   }
 
   /* 

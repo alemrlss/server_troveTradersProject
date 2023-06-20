@@ -3,6 +3,7 @@ import { Users, UsersDocument } from './schema/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { imagesDto } from './dto/imagesDto';
+import { UpdateUserDto } from './dto/UpdateUserDto';
 
 @Injectable()
 export class UsersService {
@@ -64,11 +65,22 @@ export class UsersService {
     return updatedUser;
   }
 
-  /*
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.usersModel.findById(id);
+    if (!user) {
+      // Manejar el caso de usuario no encontrado
+      throw new NotFoundException('Users_Not_Found');
+    }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    user.name = updateUserDto.name;
+    user.lastName = updateUserDto.lastName;
+    user.username = updateUserDto.username;
+    user.gender = updateUserDto.gender;
+    await user.save();
+
+    return user;
   }
+  /*
 
   remove(id: number) {
     return `This action removes a #${id} user`;

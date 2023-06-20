@@ -42,6 +42,8 @@ export class AuthService {
       user: findUser,
       token,
     };
+
+    delete data.user.password;
     return data;
   }
 }

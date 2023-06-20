@@ -53,7 +53,7 @@ export class Users {
   @Prop({ default: false })
   isVerify: boolean;
 
-  @Prop({ default: 'defaultProfile.png' })
+  @Prop({})
   imageProfile: string;
 }
 
