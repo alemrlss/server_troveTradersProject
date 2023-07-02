@@ -20,7 +20,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Api TroveTraders')
-    .setDescription('Description example')
+    .setDescription('')
     .setVersion('1.0')
     .build();
 

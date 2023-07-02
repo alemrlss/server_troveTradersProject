@@ -9,6 +9,11 @@
         "include": "users/imagesProfile",
         "outDir": "./dist/users/imagesProfile",
         "watchAssets": true
+      },
+      {
+        "include": "posts/images",
+        "outDir": "./dist/posts/images",
+        "watchAssets": true
       }
     ],
     "watchAssets": true

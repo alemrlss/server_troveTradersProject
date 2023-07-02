@@ -15,8 +15,4 @@ export class RegisterAuthDto {
   @MaxLength(12)
   @ApiProperty({ description: 'Password del usuario', example: 'alex123456' })
   password: string;
-
-  @ApiProperty({ description: 'Name del usuario', example: 'Robert' })
-  @IsNotEmpty()
-  name: string;
 }

@@ -3,7 +3,7 @@ import { Users, UsersDocument } from './schema/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { imagesDto } from './dto/imagesDto';
-import { UpdateUserDto } from './dto/UpdateUserDto';
+import { UpdateUserDto } from './dto/UpdateBasicUserDto';
 
 @Injectable()
 export class UsersService {
@@ -23,12 +23,12 @@ export class UsersService {
       // Search user in BD
       const user = await this.usersModel.findById(id);
       if (!user) {
-        throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
+        throw new HttpException('ID_NOT_FOUND_OBJECT', 403);
       }
       return user;
     } catch (error) {
       // Error
-      throw new HttpException('SERVER_ERROR', 500);
+      throw new HttpException('ID_NOT_FOUND_OBJECT', 403);
     }
   }
 

@@ -6,7 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ImagesModule } from './images/images.module';
-
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -20,6 +20,17 @@ import { ImagesModule } from './images/images.module';
     UsersModule,
     AuthModule,
     ImagesModule,
+    MailerModule.forRoot({
+      transport: {
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
+        auth: {
+          user: 'alejandroaml0528@gmail.com',
+          pass: 'sxglpwqcznnxnuyg',
+        },
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -14,8 +14,14 @@ export const renameImage = (req, file, callback) => {
 };
 
 export const fileFilter = (req, file, callback) => {
+  const maxSizeInBytes = 10 * 1024 * 1024; // 10MB
+
   if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
     return callback(new Error('Invalid format type'), false);
+  }
+
+  if (file.size > maxSizeInBytes) {
+    return callback(new Error('File size exceeds the limit'), false);
   }
 
   callback(null, true);

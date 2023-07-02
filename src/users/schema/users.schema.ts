@@ -21,20 +21,22 @@ export class Users {
   @Prop({ type: SchemaTypes.ObjectId }) //ID USUARIO
   id: ObjectId;
 
-  @Prop({ required: true })
+  @Prop({})
   name: string;
-
-  @Prop({ required: true, unique: true }) //USERNAME USUARIO
-  username: string;
-
-  @Prop({ required: true }) // APELLIDO USUSARIO
+  @Prop({}) // APELLIDO USUSARIO
   lastName: string;
 
-  @Prop({ required: true, unique: true }) //EMAIL USUARIO
+  @Prop({ required: true }) //EMAIL USUARIO
   email: string;
 
   @Prop({ required: true }) //PASSWORD USUARIO
   password: string;
+
+  @Prop({}) //USERNAME USUARIO
+  username: string;
+
+  @Prop({})
+  phone: string;
 
   @Prop({
     //GENERO USUARIO
@@ -50,11 +52,11 @@ export class Users {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Posts' }] })
   posts: Posts[];
 
+  @Prop({ default:'test.png'})
+  imageProfile: string;
+
   @Prop({ default: false })
   isVerify: boolean;
-
-  @Prop({})
-  imageProfile: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

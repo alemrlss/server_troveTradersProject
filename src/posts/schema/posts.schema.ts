@@ -6,7 +6,6 @@ export type PostsDocument = HydratedDocument<Posts>;
 
 @Schema()
 export class Posts {
-
   @Prop({ required: true })
   title: string;
 
@@ -17,7 +16,7 @@ export class Posts {
   price: string;
 
   @Prop()
-  photos: [];
+  photos: string[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'users', required: true })
   author_id: Types.ObjectId;
