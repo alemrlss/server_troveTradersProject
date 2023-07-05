@@ -20,6 +20,8 @@ import { diskStorage } from 'multer';
 import { fileFilter, renameImage } from 'src/helpers/images.helpers';
 import { join } from 'path';
 import * as fs from 'fs';
+import { UpdateStateDto } from './dto/update-state.dto';
+
 @ApiTags('Posts')
 @Controller('posts')
 //@UseGuards(JwtAuthGuard)
@@ -70,8 +72,16 @@ export class PostsController {
     @UploadedFiles() files: Array<Express.Multer.File>,
   ) {
     console.log(PostObject);
-    console.log(files);
     return this.postsService.createPost(PostObject, files);
+  }
+
+  //update currentState post( DISPONIBLE, ACUERDO, PAGO, RECIBO Y FINALIZADO )
+  @Put('/:postId')
+  async updatePostState(
+    @Param('postId') postId: string,
+    @Body() updateStateDto: UpdateStateDto, // DTO con la información del estado a actualizar
+  ) {
+    return this.postsService.updateStatePost(postId, updateStateDto);
   }
 
   //update post by id

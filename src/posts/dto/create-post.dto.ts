@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreatePostDto {
   @IsNotEmpty()
@@ -27,4 +27,16 @@ export class CreatePostDto {
   @IsString()
   @ApiProperty({ description: 'authorID', example: 'objectID' })
   author_id: string;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  confirmationAgreement: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  confirmationPayment: boolean;
+
+  @IsBoolean()
+  @IsNotEmpty()
+  confirmationDelivery: boolean;
 }

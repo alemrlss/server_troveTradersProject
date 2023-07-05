@@ -1,12 +1,19 @@
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Posts, PostsDocument } from './schema/posts.schema';
+import { PostState, Posts, PostsDocument } from './schema/posts.schema';
 import mongoose, { Model } from 'mongoose';
 import { Users } from 'src/users/schema/users.schema';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { join } from 'path';
 import * as fs from 'fs';
+import { UpdateStateDto } from './dto/update-state.dto';
+import { canUpdateState } from './helpers/canUpdateState.helpers';
 @Injectable()
 export class PostsService {
   constructor(
@@ -81,6 +88,21 @@ export class PostsService {
   async findAll() {
     const allPosts = await this.postsModel.find();
     return allPosts;
+  }
+  //update state POST
+  async updateStatePost(postId: string, updatePostDto: UpdateStateDto) {
+    const post = await this.postsModel.findById(postId);
+    if (!post) {
+      throw new NotFoundException('Post not found');
+    }
+    if (!canUpdateState(post.currentState, updatePostDto.newState)) {
+      throw new BadRequestException('Invalid state update');
+    }
+    // Realiza la actualización del estado del post
+    post.currentState = updatePostDto.newState as PostState;
+    await post.save();
+
+    return { newState: updatePostDto.newState, post };
   }
 
   //update post by id
