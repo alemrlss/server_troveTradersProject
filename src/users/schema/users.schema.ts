@@ -52,11 +52,19 @@ export class Users {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Posts' }] })
   posts: Posts[];
 
-  @Prop({ default:'test.png'})
+  @Prop({ default: 'test.png' })
   imageProfile: string;
 
   @Prop({ default: false })
   isVerify: boolean;
+  @Prop([
+    {
+      message: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+      read: { type: String },
+    },
+  ])
+  notifications: { message: string; createdAt: Date; read: boolean }[];
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { ImagesModule } from './images/images.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { WebSocketModule } from './websockets/websockets.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { WebSocketModule } from './websockets/websockets.module';
         },
       },
     }),
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
