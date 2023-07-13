@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param } from '@nestjs/common';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { Notification } from './schema/notification.schema';
@@ -10,5 +10,10 @@ export class NotificationsController {
   @Post()
   createNotification(@Body() notificationDto: CreateNotificationDto) {
     return this.notificationsService.createNotification(notificationDto);
+  }
+
+  @Get(':id')
+  getNotificationsByUserId(@Param('id') id: string) {
+    return this.notificationsService.getNotificationsByUserId(id);
   }
 }

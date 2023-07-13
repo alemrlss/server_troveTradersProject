@@ -3,6 +3,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -38,6 +39,8 @@ import { fileFilter, renameImage } from 'src/helpers/images.helpers';
 import * as fs from 'fs';
 import { join } from 'path';
 import { UpdateUserDto } from 'src/users/dto/UpdateBasicUserDto';
+import { UpdateRequestDto } from './dto/updateRequestDto.dto';
+import { ObjectId } from 'mongoose';
 
 @ApiTags('Users')
 @Controller('users')
@@ -45,14 +48,14 @@ import { UpdateUserDto } from 'src/users/dto/UpdateBasicUserDto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // return all users
+  // !return all users
   @Get()
   @ApiOperation({ summary: 'Get all users' })
   findAll() {
     return this.usersService.findAll();
   }
 
-  // return user by id
+  // !return user by id
   @Get(':id')
   @ApiOperation({ summary: 'Get user by ID' })
   @ApiParam({ name: 'id', description: 'User ID' })
@@ -60,7 +63,7 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-  //return posts by id(retorna los posts de el id pasado en cuestion)
+  // !return posts by id(retorna los posts de el id pasado en cuestion)
   @Get(':id/posts')
   @ApiOperation({ summary: 'Get posts by userID.' })
   @ApiParam({ name: 'id', description: 'user id' })
@@ -68,7 +71,7 @@ export class UsersController {
     return this.usersService.findPostById(id);
   }
 
-  //update profile image
+  // !update profile image
   @Post(':id/imageProfile')
   @ApiOperation({
     summary:
@@ -109,7 +112,7 @@ export class UsersController {
     return await this.usersService.uploadProfileImage(id, file);
   }
 
-  //update general info users(name, lastname, gender, username)
+  //!update general info users(name, lastname, gender, username)
   @Put(':id')
   @ApiOperation({
     summary: 'Put basic info user by ID(Name-Lastname-Username-Gender)  ',
@@ -121,6 +124,35 @@ export class UsersController {
   ) {
     return await this.usersService.updateUser(id, updateUserDto);
   }
+
+  //?pushes requests to user
+  @Post(':id/requests')
+  @ApiOperation({ summary: 'Post request to user' })
+  @ApiParam({ name: 'id', description: 'User id' })
+  async pushRequest(
+    @Param('id') id: string,
+    @Body() updateRequestDto: UpdateRequestDto,
+  ) {
+    return await this.usersService.pushRequest(id, updateRequestDto);
+  }
+
+  //?get requests from user
+  @Get(':id/requests')
+  @ApiOperation({ summary: 'Get requests from user' })
+  @ApiParam({ name: 'id', description: 'User id' })
+  async getRequests(@Param('id') id: string) {
+    return await this.usersService.getRequests(id);
+  }
+
+  //?delete request from user
+  @Delete(':userId/requests/:requestId')
+async deleteRequest(
+  @Param('userId') userId: string,
+  @Param('requestId') requestId: string,
+) {
+  return await this.usersService.deleteRequest(userId, requestId);
+}
+
 
   /* 
   @Delete(':id')

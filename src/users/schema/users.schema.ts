@@ -61,10 +61,34 @@ export class Users {
     {
       message: { type: String, required: true },
       createdAt: { type: Date, default: Date.now },
-      read: { type: String },
+      read: { type: Boolean, default: false },
     },
   ])
   notifications: { message: string; createdAt: Date; read: boolean }[];
+
+  @Prop([
+    {
+      message: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+      sellerID: { type: String },
+      buyerID: { type: String },
+      postID: { type: String },
+      nameBuyer: { type: String },
+      nameSeller: { type: String },
+      titlePost: { type: String },
+    },
+  ])
+  requests: {
+    _id: ObjectId;
+    message: string;
+    createdAt: Date;
+    sellerID: string;
+    buyerID: string;
+    postID: string;
+    nameBuyer: string;
+    nameSeller: string;
+    titlePost: string;
+  }[];
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

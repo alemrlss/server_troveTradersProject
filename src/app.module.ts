@@ -31,7 +31,7 @@ import { NotificationsModule } from './notifications/notifications.module';
         secure: true,
         auth: {
           user: 'alejandroaml0528@gmail.com',
-          pass: 'sxglpwqcznnxnuyg',
+          pass: 'grjlowxfpxallbdt',
         },
       },
     }),

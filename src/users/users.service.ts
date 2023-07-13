@@ -1,9 +1,11 @@
+/* eslint-disable prettier/prettier */
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { Users, UsersDocument } from './schema/users.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import mongoose, { Model } from 'mongoose';
+import mongoose, { Model, ObjectId } from 'mongoose';
 import { imagesDto } from './dto/imagesDto';
 import { UpdateUserDto } from './dto/UpdateBasicUserDto';
+import { UpdateRequestDto } from './dto/updateRequestDto.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,10 +13,12 @@ export class UsersService {
     @InjectModel(Users.name) private usersModel: Model<UsersDocument>,
   ) {}
 
+  //! return all users
   findAll() {
     const users = this.usersModel.find();
     return users;
   }
+  //! return user by id
   async findOne(id: string) {
     if (!mongoose.isValidObjectId(id))
       throw new HttpException('ID_NOT_FOUND', 404);
@@ -32,6 +36,7 @@ export class UsersService {
     }
   }
 
+  //! find posts by Userid
   async findPostById(id: string) {
     if (!mongoose.isValidObjectId(id))
       throw new HttpException('ID_NOT_FOUND', 404);
@@ -48,6 +53,7 @@ export class UsersService {
     }
   }
 
+  //! upload image profile
   async uploadProfileImage(id: string, file: imagesDto) {
     if (!mongoose.isValidObjectId(id))
       throw new HttpException('ID_NOT_VALID', 404);
@@ -65,6 +71,7 @@ export class UsersService {
     return updatedUser;
   }
 
+  //! update user
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.usersModel.findById(id);
     if (!user) {
@@ -80,10 +87,66 @@ export class UsersService {
 
     return user;
   }
-  /*
+
+  // ?push request to user
+  async pushRequest(id: string, updateRequestDto: UpdateRequestDto) {
+    if (!mongoose.isValidObjectId(id))
+      throw new HttpException('ID_NOT_FOUND', 404);
+    try {
+      // Search user in BD
+      const user = await this.usersModel.findById(id);
+      if (!user) {
+        throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
+      }
+      user.requests.push(updateRequestDto);
+      await user.save();
+      return { sucess: true, message: 'Request added' };
+    } catch (error) {
+      // Error
+      throw new HttpException('SERVER_ERROR', 500);
+    }
+  }
+
+  // ?get request from user
+  async getRequests(id: string) {
+    if (!mongoose.isValidObjectId(id))
+      throw new HttpException('ID_NOT_FOUND', 404);
+    try {
+      const user = await this.usersModel.findById(id);
+      if (!user) {
+        throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
+      }
+      return { success: true, requests: user.requests, user: user.name };
+    } catch (error) {
+      // Error
+      throw new HttpException('SERVER_ERROR', 500);
+    }
+  }
+
+  //?delete request from user
+  async deleteRequest(id: string, requestId: string) {
+    const user = await this.usersModel.findById(id);
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+
+    const requestIndex = user.requests.findIndex(
+      (request) => request._id.toString() === requestId,
+    );
+
+    if (requestIndex === -1) {
+      throw new HttpException('REQUEST_NOT_FOUND', 404);
+    }
+
+    user.requests.splice(requestIndex, 1);
+    await user.save();
+    return { success: true, message: 'Request deleted' };	
+  }
+}
+
+/*
 
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
 */
-}

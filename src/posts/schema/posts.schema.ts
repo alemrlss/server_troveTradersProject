@@ -29,6 +29,9 @@ export class Posts {
 
   @Prop({ default: PostState.DISPONIBLE })
   currentState: PostState;
+
+  @Prop({ default: Date.now })
+  createdAt: Date;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);
