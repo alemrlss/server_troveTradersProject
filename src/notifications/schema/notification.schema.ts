@@ -14,6 +14,9 @@ export class Notification extends Document {
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({ default: '/home', required: true })
+  target: string;
 }
 
 export const NotificationSchema = SchemaFactory.createForClass(Notification);

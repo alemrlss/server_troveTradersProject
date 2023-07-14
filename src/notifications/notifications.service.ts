@@ -14,11 +14,12 @@ export class NotificationsService {
     @InjectModel(Users.name) private readonly usersModel: Model<Users>,
   ) {}
   async createNotification(createNotificationDto: CreateNotificationDto) {
-    const { sellerId, message } = createNotificationDto;
+    const { sellerId, message, target } = createNotificationDto;
 
     const newNotification = new this.notificationModel({
       sellerId,
       message,
+      target,
     });
     const notification = await newNotification.save();
 

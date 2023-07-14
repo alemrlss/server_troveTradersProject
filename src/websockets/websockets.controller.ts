@@ -47,13 +47,13 @@ export class AppGateway
   @SubscribeMessage('notification')
   sendNotificationToUser(
     client: Socket,
-    payload: { authorId: string; msgNotification: any, bgColor: string},
+    payload: { authorId: string; msgNotification: any, bgColor: string, target: string},
   ): void {
-    const { authorId, msgNotification, bgColor } = payload;
+    const { authorId, msgNotification, bgColor, target } = payload;
 
     const userSocket = this.userConnections.get(authorId);
     if (userSocket) {
-      userSocket.emit('newNotification', {msgNotification, bgColor});
+      userSocket.emit('newNotification', {msgNotification, bgColor, target});
     }
   }
 
