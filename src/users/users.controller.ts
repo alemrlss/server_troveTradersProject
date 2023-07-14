@@ -146,14 +146,33 @@ export class UsersController {
 
   //?delete request from user
   @Delete(':userId/requests/:requestId')
-async deleteRequest(
-  @Param('userId') userId: string,
-  @Param('requestId') requestId: string,
-) {
-  return await this.usersService.deleteRequest(userId, requestId);
-}
+  async deleteRequest(
+    @Param('userId') userId: string,
+    @Param('requestId') requestId: string,
+  ) {
+    return await this.usersService.deleteRequest(userId, requestId);
+  }
 
+  //? endpoint para aceptar solicitud y convertirla en un trade
+  @Post(':userId/requests/:requestId/accept')
+  async acceptRequest(
+    @Param('userId') userId: string,
+    @Param('requestId') requestId: string,
+  ) {
+    return await this.usersService.acceptRequest(userId, requestId);
+  }
 
+  // !getTradeDetails
+  @Get(':userId/trades/:tradeId')
+  getTradeDetails(@Param('userId') userId: string, @Param('tradeId') tradeId: string) {
+    return this.usersService.getTradeDetails(userId, tradeId);
+  }
+
+  //!get all trades from user
+  @Get(':userId/trades')
+  getTrades(@Param('userId') userId: string) {
+    return this.usersService.getTrades(userId);
+  }
   /* 
   @Delete(':id')
   remove(@Param('id') id: string) {

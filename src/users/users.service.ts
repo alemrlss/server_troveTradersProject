@@ -92,19 +92,23 @@ export class UsersService {
   async pushRequest(id: string, updateRequestDto: UpdateRequestDto) {
     if (!mongoose.isValidObjectId(id))
       throw new HttpException('ID_NOT_FOUND', 404);
-    try {
-      // Search user in BD
-      const user = await this.usersModel.findById(id);
-      if (!user) {
-        throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
+
+      try {
+        // Search user in BD
+        const user = await this.usersModel.findById(id);
+        if (!user) {
+          throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
+        }
+    
+  
+        user.requests.push(updateRequestDto);
+        await user.save();
+        return { sucess: true, message: 'Request added' };
+      } catch (error) {
+        // Error
+        console.log('esto')
+        throw new HttpException('SERVER_ERROR', 500);
       }
-      user.requests.push(updateRequestDto);
-      await user.save();
-      return { sucess: true, message: 'Request added' };
-    } catch (error) {
-      // Error
-      throw new HttpException('SERVER_ERROR', 500);
-    }
   }
 
   // ?get request from user
@@ -140,8 +144,74 @@ export class UsersService {
 
     user.requests.splice(requestIndex, 1);
     await user.save();
-    return { success: true, message: 'Request deleted' };	
+    return { success: true, message: 'Request deleted' };
   }
+
+  //? para aceptar solicitud y convertirla en un trade
+  async acceptRequest(userId: string, requestId: string) {
+    if (!mongoose.isValidObjectId(userId))
+      throw new HttpException('USERID_NO_VALID', 404);
+
+    if (!mongoose.isValidObjectId(requestId))
+      throw new HttpException('REQUESTID_NO_VALID', 404);
+
+    // !Verificar al seller
+    const seller = await this.usersModel.findById(userId);
+    if (!seller) {
+      throw new HttpException('SELLER_NOT_FOUND', 404);
+    }
+
+    // Obtener la solicitud específica del usuario
+    const request = seller.requests.find((r) => r._id.toString() === requestId);
+    if (!request) {
+      throw new HttpException('REQUEST_NOT_FOUND', 404);
+    }
+    // !Verificar al buyer
+    const buyer = await this.usersModel.findById(request.buyerID);
+    if (!buyer) {
+      throw new HttpException('BUYER_NOT_FOUND', 404);
+    }
+    //! Crear una nueva fecha y hora actual
+    const currentDateTime = new Date();
+    //! Actualizar el campo createdAt en la solicitud
+    request.createdAt = currentDateTime;
+
+    seller.requests = seller.requests.filter(
+      (r) => r._id.toString() !== requestId,
+    );
+    seller.trades.push(request);
+    buyer.trades.push(request);
+    await seller.save();
+    await buyer.save();
+
+    return { success: 'La request ha sido aceptada con exito' };
+  }
+
+  //! get trade details
+  async getTradeDetails(userId: string, tradeId: string) {
+    const user = await this.usersModel.findById(userId);
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+
+    const trade = user.trades.find((trade) => trade._id.toString() === tradeId);
+
+    if (!trade) {
+      throw new NotFoundException('Trade not found');
+    }
+
+    return trade;
+  }
+  //! get trades from user
+  async getTrades(userId: string) {
+    const user = await this.usersModel.findById(userId);
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+
+    return user.trades;
+  }
+  
 }
 
 /*

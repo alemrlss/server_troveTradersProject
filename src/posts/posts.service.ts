@@ -90,6 +90,11 @@ export class PostsService {
     const allPosts = await this.postsModel.find();
     return allPosts;
   }
+
+  //return only posts available
+  async getAllAvailablePosts() {
+    return this.postsModel.find({ currentState: 'disponible' });
+  }
   //update state POST
   async updateStatePost(postId: string, updatePostDto: UpdateStateDto) {
     const post = await this.postsModel.findById(postId);

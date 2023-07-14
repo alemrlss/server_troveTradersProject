@@ -23,16 +23,16 @@ export class AuthService {
     const { password } = userObject;
     const plainToHash = await hash(password, 10);
     userObject = { ...userObject, password: plainToHash };
-    try {
-      this.mailerService.sendMail({
-        to: email, //a donde va el correo
-        from: 'alejandroaml0528@gmail.com', //no se para que sirve
-        subject: 'MENSAJE DE BIENVENIDA A LA APLICACION', //Texto que va cuando llega el msj
-        html: '<h2> HOLA BIENVENIDO A TROVETRADERS </h2><b>ESTO ES UN TESTING</b>', //cuerpo del mensaje
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    //  try {
+    //   this.mailerService.sendMail({
+    //   to: email, //a donde va el correo
+    // from: 'alejandroaml0528@gmail.com', //no se para que sirve
+    //subject: 'MENSAJE DE BIENVENIDA A LA APLICACION', //Texto que va cuando llega el msj
+    //html: '<h2> HOLA BIENVENIDO A TROVETRADERS </h2><b>ESTO ES UN TESTING</b>', //cuerpo del mensaje
+    //});
+    //} catch (error) {
+    //console.log(error);
+    //   }
     return this.userModel.create(userObject);
   }
 

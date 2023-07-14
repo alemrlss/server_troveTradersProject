@@ -29,13 +29,20 @@ import { UpdateStateDto } from './dto/update-state.dto';
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
-  //get all posts
+  //!get all posts
   @Get()
   @ApiOperation({ summary: 'Get all Posts' })
   findAll() {
     return this.postsService.findAll();
   }
-  //get post by id
+
+  //!get posts availables
+  @Get('availables')
+  @ApiOperation({ summary: 'Obtener todos los posts disponibles' })
+  async getAllAvailablePosts() {
+    return this.postsService.getAllAvailablePosts();
+  }
+  //!get post by id
   @Get(':id')
   @ApiOperation({ summary: 'Get Post by ID' })
   @ApiParam({ name: 'id', description: 'Post ID' })
@@ -43,7 +50,7 @@ export class PostsController {
     return await this.postsService.findOne(id);
   }
 
-  //create post with photos
+  //!create post with photos
   @Post()
   @ApiOperation({
     summary:
