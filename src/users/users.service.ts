@@ -106,7 +106,6 @@ export class UsersService {
         return { sucess: true, message: 'Request added' };
       } catch (error) {
         // Error
-        console.log('esto')
         throw new HttpException('SERVER_ERROR', 500);
       }
   }
@@ -181,6 +180,8 @@ export class UsersService {
     );
     seller.trades.push(request);
     buyer.trades.push(request);
+
+ 
     await seller.save();
     await buyer.save();
 

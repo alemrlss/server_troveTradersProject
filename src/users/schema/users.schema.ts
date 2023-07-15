@@ -66,6 +66,7 @@ export class Users {
     },
   ])
   notifications: {
+    _id: ObjectId;
     message: string;
     createdAt: Date;
     read: boolean;

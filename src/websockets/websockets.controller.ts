@@ -12,6 +12,9 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
+import { MessagesService } from 'src/messages/messages.service';
+import { MessageDto } from 'src/messages/dto/messageCreate.dto';
+
 @WebSocketGateway(81, {
   cors: {
     origin: '*',
@@ -20,6 +23,8 @@ import { Server, Socket } from 'socket.io';
 export class AppGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
+  constructor(private readonly messagesService: MessagesService) {}
+
   @WebSocketServer()
   server: Server;
   //~MAP DE LOS USERS CONECTADOS
@@ -47,21 +52,55 @@ export class AppGateway
   @SubscribeMessage('notification')
   sendNotificationToUser(
     client: Socket,
-    payload: { authorId: string; msgNotification: any, bgColor: string, target: string},
+    payload: {
+      authorId: string;
+      msgNotification: any;
+      bgColor: string;
+      target: string;
+    },
   ): void {
     const { authorId, msgNotification, bgColor, target } = payload;
 
     const userSocket = this.userConnections.get(authorId);
     if (userSocket) {
-      userSocket.emit('newNotification', {msgNotification, bgColor, target});
+      userSocket.emit('newNotification', { msgNotification, bgColor, target });
     }
+  }
+
+  @SubscribeMessage('joinTradeRoom')
+  handleJoinTradeRoom(client: Socket, tradeId: string) {
+    // Asociar el tradeId al cliente
+    client.data.tradeId = tradeId;
+    client.join(tradeId); // El cliente se une a la sala especificada
+  }
+
+  @SubscribeMessage('sendMessage')
+  async handleMessage(
+    client: Socket,
+    payload: { tradeId: string; message: string; username: string },
+  ) {
+    
+    const { tradeId, message, username } = payload;
+    const idUser = client.handshake.query.userId as string;
+
+    const newMessage: MessageDto = {
+      tradeId,
+      senderId: idUser.toString(),
+      message,
+      username: username,
+      createdAt: new Date(),
+    };
+
+    await this.messagesService.createMessage(newMessage);
+
+    console.log(newMessage);
+    this.server.to(tradeId).emit('message', newMessage);
   }
 
   // !Abajo de aqui nada vale..
   // FUNCION PERSONALIZADA ( EN EL CLIENTE PARA COMUNICARLA DEBE TENER EL MISMO NOMBRE)
   @SubscribeMessage('mensajeCliente')
-  handleMessage(client: Socket, payload: any) {
-   
+  handleMessdage(client: Socket, payload: any) {
     // Enviar un mensaje al cliente
     this.server.emit(
       'mensajeServidor',

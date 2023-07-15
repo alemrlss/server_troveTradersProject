@@ -44,4 +44,36 @@ export class NotificationsService {
 
     return user.notifications;
   }
+
+  async readNotification(idRequest: string, userId: string) {
+    if (!mongoose.isValidObjectId(idRequest)) {
+      throw new HttpException('ID_REQUEST_NOT_FOUND', 404);
+    }
+    if (!mongoose.isValidObjectId(userId)) {
+      throw new HttpException('ID_USER_NOT_FOUND', 404);
+    }
+    const user = await this.usersModel.findById(userId);
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+    const newNotification = await this.notificationModel.findByIdAndUpdate(
+      idRequest,
+      { read: true },
+      { new: true },
+    );
+    if (!newNotification) {
+      throw new HttpException('NOTIFCATION_NOT_FOUND', 404);
+    }
+    const notification = user.notifications.find(
+      (notification) => notification._id.toString() === idRequest,
+    );
+    if (!notification) {
+      throw new HttpException('NOTIFICATION_NOT_FOUND', 404);
+    }
+
+    notification.read = true;
+    await user.save();
+
+    return { message: 'READ_NOTIFICATION_SUCCESSFULLY' };
+  }
 }

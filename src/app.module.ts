@@ -11,6 +11,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { WebSocketModule } from './websockets/websockets.module';
 import { NotificationsModule } from './notifications/notifications.module';
 
+import { MessagesModule } from './messages/messages.module';
+
 @Module({
   imports: [
     MongooseModule.forRootAsync({
@@ -36,6 +38,7 @@ import { NotificationsModule } from './notifications/notifications.module';
       },
     }),
     NotificationsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
