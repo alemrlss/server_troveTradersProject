@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 
 import {
+  MessageBody,
   OnGatewayConnection,
   OnGatewayDisconnect,
   OnGatewayInit,
@@ -79,7 +80,6 @@ export class AppGateway
     client: Socket,
     payload: { tradeId: string; message: string; username: string },
   ) {
-    
     const { tradeId, message, username } = payload;
     const idUser = client.handshake.query.userId as string;
 
@@ -93,8 +93,64 @@ export class AppGateway
 
     await this.messagesService.createMessage(newMessage);
 
-    console.log(newMessage);
     this.server.to(tradeId).emit('message', newMessage);
+  }
+
+  @SubscribeMessage('sellerConfirmed')
+  handleSellerConfirmed(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    // Aquí debes actualizar el estado del vendedor en la base de datos, marcarlo como confirmado
+    // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del vendedor
+    // Por ejemplo:
+    console.log(payload.message);
+    this.server
+      .to(payload.tradeId)
+      .emit('sellerConfirmed', { message: payload.message });
+  }
+
+  @SubscribeMessage('buyerConfirmed')
+  handleBuyerConfirmed(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    // Aquí debes actualizar el estado del comprador en la base de datos, marcarlo como confirmado
+    // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del comprador
+    // Por ejemplo:
+    console.log(payload.message);
+    this.server
+      .to(payload.tradeId)
+      .emit('buyerConfirmed', { message: payload.message });
+  }
+
+  @SubscribeMessage('buyerConfirmationPay')
+  handleBuyerConfirmationPay(client: Socket, payload: any) {
+    // Lógica al recibir el evento 'compradorConfirmado'
+    // Puedes emitir eventos de confirmación o realizar otras acciones
+    this.server.emit('buyerConfirmationPay');
+  }
+
+  @SubscribeMessage('sellerConfirmationPay')
+  handleSellerConfirmationPay(client: Socket, payload: any) {
+    // Lógica al recibir el evento 'vendedorConfirmado'
+    // Puedes emitir eventos de confirmación o realizar otras acciones
+    this.server.emit('sellerConfirmationPay');
+  }
+
+  @SubscribeMessage('buyerConfirmationReceived')
+  handleBuyerConfirmationReceived(client: Socket, payload: any) {
+    console.log('ha llegado la confirmacion del buyer');
+    // Lógica al recibir el evento 'compradorConfirmado'
+    // Puedes emitir eventos de confirmación o realizar otras acciones
+    this.server.emit('buyerConfirmationReceived');
+  }
+
+  @SubscribeMessage('sellerConfirmationReceived')
+  handleSellerConfirmationReceived(client: Socket, payload: any) {
+    // Lógica al recibir el evento 'vendedorConfirmado'
+    // Puedes emitir eventos de confirmación o realizar otras acciones
+    this.server.emit('sellerConfirmationReceived');
   }
 
   // !Abajo de aqui nada vale..
