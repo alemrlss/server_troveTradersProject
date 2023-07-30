@@ -99,21 +99,21 @@ export class AppGateway
   @SubscribeMessage('sellerConfirmed')
   handleSellerConfirmed(
     client: Socket,
-    payload: { tradeId: string; message: string },
+    payload: { tradeId: string; message: string; messageLocalStorage: string },
   ) {
     // Aquí debes actualizar el estado del vendedor en la base de datos, marcarlo como confirmado
     // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del vendedor
     // Por ejemplo:
-    console.log(payload.message);
-    this.server
-      .to(payload.tradeId)
-      .emit('sellerConfirmed', { message: payload.message });
+    this.server.to(payload.tradeId).emit('sellerConfirmed', {
+      message: payload.message,
+      messageLocalStorage: payload.messageLocalStorage,
+    });
   }
 
   @SubscribeMessage('buyerConfirmed')
   handleBuyerConfirmed(
     client: Socket,
-    payload: { tradeId: string; message: string },
+    payload: { tradeId: string; message: string; messageLocalStorage: string },
   ) {
     // Aquí debes actualizar el estado del comprador en la base de datos, marcarlo como confirmado
     // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del comprador
@@ -121,7 +121,10 @@ export class AppGateway
     console.log(payload.message);
     this.server
       .to(payload.tradeId)
-      .emit('buyerConfirmed', { message: payload.message });
+      .emit('buyerConfirmed', {
+        message: payload.message,
+        messageLocalStorage: payload.messageLocalStorage,
+      });
   }
 
   @SubscribeMessage('buyerConfirmationPay')

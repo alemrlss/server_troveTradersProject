@@ -95,6 +95,12 @@ export class Users {
     nameBuyer: string;
     nameSeller: string;
     titlePost: string;
+    agreementConfirmationBuyer: boolean;
+    agreementConfirmationSeller: boolean;
+    payConfirmationBuyer: boolean;
+    payConfirmationSeller: boolean;
+    receivedConfirmationBuyer: boolean;
+    receivedConfirmationSeller: boolean;
   }[];
 
   @Prop([
@@ -107,6 +113,12 @@ export class Users {
       nameBuyer: { type: String },
       nameSeller: { type: String },
       titlePost: { type: String },
+      agreementConfirmationSeller: { type: Boolean, default: false },
+      agreementConfirmationBuyer: { type: Boolean, default: false },
+      payConfirmationBuyer: { type: Boolean, default: false },
+      payConfirmationSeller: { type: Boolean, default: false },
+      receivedConfirmationBuyer: { type: Boolean, default: false },
+      receivedConfirmationSeller: { type: Boolean, default: false },
     },
   ])
   trades: {
@@ -119,7 +131,45 @@ export class Users {
     nameBuyer: string;
     nameSeller: string;
     titlePost: string;
+    agreementConfirmationSeller: boolean;
+    agreementConfirmationBuyer: boolean;
+    payConfirmationBuyer: boolean;
+    payConfirmationSeller: boolean;
+    receivedConfirmationBuyer: boolean;
+    receivedConfirmationSeller: boolean;
   }[];
+
+  @Prop([
+    {
+      message: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+      sellerID: { type: String },
+      buyerID: { type: String },
+      postID: { type: String },
+      nameBuyer: { type: String },
+      nameSeller: { type: String },
+      titlePost: { type: String },
+      payConfirmationBuyer: { type: Boolean, default: false },
+      payConfirmationSeller: { type: Boolean, default: false },
+    },
+  ])
+  tradesFinished: {
+    _id: ObjectId;
+    message: string;
+    createdAt: Date;
+    sellerID: string;
+    buyerID: string;
+    postID: string;
+    nameBuyer: string;
+    nameSeller: string;
+    titlePost: string;
+  }[];
+
+  @Prop()
+  verificationToken: string;
+
+  @Prop({ default: false })
+  verificationEmail: boolean;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

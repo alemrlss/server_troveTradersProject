@@ -13,4 +13,11 @@ export class UpdateRequestDto {
   nameBuyer: string;
   nameSeller: string;
   titlePost: string;
+  agreementConfirmationSeller: boolean;
+  agreementConfirmationBuyer: boolean;
+  payConfirmationBuyer: boolean;
+  payConfirmationSeller: boolean;
+  receivedConfirmationBuyer: boolean;
+  receivedConfirmationSeller: boolean;
+  
 }

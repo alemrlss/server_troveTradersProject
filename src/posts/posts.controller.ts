@@ -9,6 +9,7 @@ import {
   UseGuards,
   UseInterceptors,
   UploadedFiles,
+  Delete,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
@@ -85,6 +86,10 @@ export class PostsController {
 
   //update currentState post( DISPONIBLE, ACUERDO, PAGO, RECIBO Y FINALIZADO )
   @Put('/:postId')
+  @ApiOperation({
+    summary:
+      'change state post( DISPONIBLE, ACUERDO, PAGO, RECIBO Y FINALIZADO )',
+  })
   async updatePostState(
     @Param('postId') postId: string,
     @Body() updateStateDto: UpdateStateDto, // DTO con la información del estado a actualizar
@@ -92,16 +97,49 @@ export class PostsController {
     return this.postsService.updateStatePost(postId, updateStateDto);
   }
 
-  //update post by id
-  //pendiente por terminar...
-  //@Put(':id')
-  //async updatePost(
-  // @Param('id') id: string,
-  //@Body() updatePostDto: UpdatePostDto,
-  //) {
-  // return await this.postsService.updatePost(id, updatePostDto);
-  //}
+  //!Hasta los momentos se edita todo, y con las imagenes se añaden
+  @Put('/edit/:id')
+  @ApiOperation({
+    summary: 'Edit Post',
+  })
+  @UseInterceptors(
+    FilesInterceptor('newPhoto', null, {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          const destinationFolder = join(
+            process.cwd(),
+            'src',
+            'posts',
+            'images',
+          );
+          fs.mkdirSync(destinationFolder, { recursive: true });
+          cb(null, destinationFolder);
+        },
+        filename: renameImage,
+      }),
+      fileFilter: fileFilter,
+    }),
+  )
+  async updatePost(
+    @Param('id') id: string,
+    @Body() updatePostDto: UpdatePostDto,
+    @UploadedFiles() files: Array<Express.Multer.File>,
+  ) {
+    if (files && files.length > 0) {
+      // Obtener los nombres de los archivos de las nuevas imágenes
+      const newPhotoPaths = files.map((file) => file.filename);
+      updatePostDto.newPhotos = newPhotoPaths;
+    }
+    return await this.postsService.updatePost(id, updatePostDto);
+  }
 
+  @Delete('/delete/:id')
+  @ApiOperation({
+    summary: 'Delete post and images post',
+  })
+  remove(@Param('id') id: string) {
+    return this.postsService.remove(id);
+  }
   /*
 
   @Get(':id')
@@ -114,9 +152,6 @@ export class PostsController {
     return this.postsService.update(+id, updatePostDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id);
-  }
+ 
   */
 }

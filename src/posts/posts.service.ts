@@ -112,13 +112,30 @@ export class PostsService {
   }
 
   //update post by id
-  async updatePost(id: string, updateUserDto: UpdatePostDto) {
-    const user = await this.usersModel.findById(id);
-    if (!user) {
-      // Manejar el caso de usuario no encontrado
-      throw new NotFoundException('User_Not_Found');
+  async updatePost(id: string, updatePostDto: UpdatePostDto) {
+    const post = await this.postsModel.findById(id);
+    if (!post) {
+      throw new HttpException('POST_NOT_FOUND', 404);
     }
 
-    return updateUserDto;
+    post.title = updatePostDto.title;
+    post.description = updatePostDto.description;
+    post.price = updatePostDto.price;
+
+    if (updatePostDto.newPhotos) {
+      // Si hay nuevas imágenes, las añadimos al post
+      post.photos.push(...updatePostDto.newPhotos);
+    }
+    await post.save();
+    return post;
+  }
+
+  //delete post by id
+  async remove(id: string) {
+    const post = await this.postsModel.findByIdAndDelete(id);
+    if (!post) {
+      throw new HttpException('POST_NOT_FOUND', 404);
+    }
+    return post;
   }
 }

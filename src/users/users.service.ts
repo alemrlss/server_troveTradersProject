@@ -93,21 +93,20 @@ export class UsersService {
     if (!mongoose.isValidObjectId(id))
       throw new HttpException('ID_NOT_FOUND', 404);
 
-      try {
-        // Search user in BD
-        const user = await this.usersModel.findById(id);
-        if (!user) {
-          throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
-        }
-    
-  
-        user.requests.push(updateRequestDto);
-        await user.save();
-        return { sucess: true, message: 'Request added' };
-      } catch (error) {
-        // Error
-        throw new HttpException('SERVER_ERROR', 500);
+    try {
+      // Search user in BD
+      const user = await this.usersModel.findById(id);
+      if (!user) {
+        throw new HttpException('ID_NOT_FOUND_OBJECT', 404);
       }
+
+      user.requests.push(updateRequestDto);
+      await user.save();
+      return { sucess: true, message: 'Request added' };
+    } catch (error) {
+      // Error
+      throw new HttpException('SERVER_ERROR', 500);
+    }
   }
 
   // ?get request from user
@@ -174,6 +173,12 @@ export class UsersService {
     const currentDateTime = new Date();
     //! Actualizar el campo createdAt en la solicitud
     request.createdAt = currentDateTime;
+    request.agreementConfirmationSeller = false;
+    request.agreementConfirmationBuyer = false;
+    request.payConfirmationBuyer = false;
+    request.payConfirmationSeller = false;
+    request.receivedConfirmationBuyer = false;
+    request.receivedConfirmationSeller = false;
 
     seller.requests = seller.requests.filter(
       (r) => r._id.toString() !== requestId,
@@ -181,7 +186,6 @@ export class UsersService {
     seller.trades.push(request);
     buyer.trades.push(request);
 
- 
     await seller.save();
     await buyer.save();
 
@@ -212,12 +216,221 @@ export class UsersService {
 
     return user.trades;
   }
-  
+
+  async moveTradeToFinish(tradeId: string, userId: string) {
+    const user = await this.usersModel.findById(userId);
+
+    if (!user) {
+      throw new HttpException('USER_NOT_FOUND', 404);
+    }
+
+    const tradeIndex = user.trades.findIndex(
+      (t) => t._id.toString() === tradeId,
+    );
+
+    if (tradeIndex === -1) {
+      throw new Error('No se encontró el trade en el usuario');
+    }
+
+    // Obtén el trade que se va a mover
+    const tradeToMove = user.trades.splice(tradeIndex, 1)[0];
+
+    // Agrega el trade a la lista de tradesFinished
+    user.tradesFinished.push(tradeToMove);
+
+    await user.save();
+
+    return { success: true, message: 'Trade moved to finished' };
+  }
+
+  async confirmAgreementSeller(
+    idTrade: string,
+    idSeller: string,
+    idBuyer: string,
+  ) {
+    const buyer = await this.usersModel.findById(idBuyer);
+    if (!buyer) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    const seller = await this.usersModel.findById(idSeller);
+    if (!seller) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+
+    // Buscar el trade dentro del usuario comprador por su ID
+    const tradeSeller = seller.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeSeller) {
+      throw new Error('Trade del Vendedor no encontrado');
+    }
+    const tradeBuyer = buyer.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeBuyer) {
+      throw new Error('Trade del Comprador no encontrado');
+    }
+
+    tradeBuyer.agreementConfirmationSeller = true;
+    tradeSeller.agreementConfirmationSeller = true;
+
+    await seller.save();
+    await buyer.save();
+    return { success: true, message: 'Trade agreement confirmed by Seller' };
+  }
+  async confirmAgreementBuyer(
+    idTrade: string,
+    idSeller: string,
+    idBuyer: string,
+  ) {
+    const buyer = await this.usersModel.findById(idBuyer);
+    if (!buyer) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    const seller = await this.usersModel.findById(idSeller);
+    if (!seller) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+
+    // Buscar el trade dentro del usuario comprador por su ID
+    const tradeSeller = seller.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeSeller) {
+      throw new Error('Trade del Vendedor no encontrado');
+    }
+    const tradeBuyer = buyer.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeBuyer) {
+      throw new Error('Trade del Comprador no encontrado');
+    }
+
+    tradeBuyer.agreementConfirmationBuyer = true;
+    tradeSeller.agreementConfirmationBuyer = true;
+
+    await seller.save();
+    await buyer.save();
+
+    return { success: true, message: 'Trade agreement confirmed by Buyer' };
+  }
+
+  async confirmPayBuyer(idTrade: string, idSeller: string, idBuyer: string) {
+    const buyer = await this.usersModel.findById(idBuyer);
+    if (!buyer) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    const seller = await this.usersModel.findById(idSeller);
+    if (!seller) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+
+    // Buscar el trade dentro del usuario comprador por su ID
+    const tradeSeller = seller.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeSeller) {
+      throw new Error('Trade del Vendedor no encontrado');
+    }
+    const tradeBuyer = buyer.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeBuyer) {
+      throw new Error('Trade del Comprador no encontrado');
+    }
+
+    tradeBuyer.payConfirmationBuyer = true;
+    tradeSeller.payConfirmationBuyer = true;
+
+    await seller.save();
+    await buyer.save();
+
+    return { success: true, message: 'Trade pay confirmed by Buyer' };
+  }
+
+  async confirmPaySeller(idTrade: string, idSeller: string, idBuyer: string) {
+    const buyer = await this.usersModel.findById(idBuyer);
+    if (!buyer) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    const seller = await this.usersModel.findById(idSeller);
+    if (!seller) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    // Buscar el trade dentro del usuario comprador por su ID
+    const tradeSeller = seller.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeSeller) {
+      throw new Error('Trade del Vendedor no encontrado');
+    }
+    const tradeBuyer = buyer.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeBuyer) {
+      throw new Error('Trade del Comprador no encontrado');
+    }
+
+    tradeBuyer.payConfirmationSeller = true;
+    tradeSeller.payConfirmationSeller = true;
+
+    await seller.save();
+    await buyer.save();
+
+    return { success: true, message: 'Trade pay confirmed by Seller' };
+  }
+
+  async confirmReceivedBuyer(
+    idTrade: string,
+    idSeller: string,
+    idBuyer: string,
+  ) {
+    const buyer = await this.usersModel.findById(idBuyer);
+    if (!buyer) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    const seller = await this.usersModel.findById(idSeller);
+    if (!seller) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    // Buscar el trade dentro del usuario comprador por su ID
+    const tradeSeller = seller.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeSeller) {
+      throw new Error('Trade del Vendedor no encontrado');
+    }
+    const tradeBuyer = buyer.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeBuyer) {
+      throw new Error('Trade del Comprador no encontrado');
+    }
+
+    tradeBuyer.receivedConfirmationBuyer = true;
+    tradeSeller.receivedConfirmationBuyer = true;
+
+    await seller.save();
+    await buyer.save();
+
+    return { success: true, message: 'Trade Received confirmed by Buyer' };
+  }
+  async confirmReceivedSeller(
+    idTrade: string,
+    idSeller: string,
+    idBuyer: string,
+  ) {
+    const buyer = await this.usersModel.findById(idBuyer);
+    if (!buyer) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    const seller = await this.usersModel.findById(idSeller);
+    if (!seller) {
+      throw new Error('Usuario comprador no encontrado');
+    }
+    // Buscar el trade dentro del usuario comprador por su ID
+    const tradeSeller = seller.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeSeller) {
+      throw new Error('Trade del Vendedor no encontrado');
+    }
+    const tradeBuyer = buyer.trades.find((t) => t._id.toString() === idTrade);
+    if (!tradeBuyer) {
+      throw new Error('Trade del Comprador no encontrado');
+    }
+
+    tradeBuyer.receivedConfirmationSeller = true;
+    tradeSeller.receivedConfirmationSeller = true;
+
+    await seller.save();
+    await buyer.save();
+
+    return { success: true, message: 'Trade Received confirmed by Seller' };
+  }
 }
 
 /*
 
-  remove(id: number) {
+  remove(id: number) {+
     return `This action removes a #${id} user`;
   }
 */

@@ -164,7 +164,10 @@ export class UsersController {
 
   // !getTradeDetails
   @Get(':userId/trades/:tradeId')
-  getTradeDetails(@Param('userId') userId: string, @Param('tradeId') tradeId: string) {
+  getTradeDetails(
+    @Param('userId') userId: string,
+    @Param('tradeId') tradeId: string,
+  ) {
     return this.usersService.getTradeDetails(userId, tradeId);
   }
 
@@ -173,6 +176,68 @@ export class UsersController {
   getTrades(@Param('userId') userId: string) {
     return this.usersService.getTrades(userId);
   }
+
+  @Put('trades/:tradeId/:userId')
+  moveTradeToFinish(
+    @Param('tradeId') tradeId: string,
+    @Param('userId') userId: string,
+  ) {
+    return this.usersService.moveTradeToFinish(tradeId, userId);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationAgreementSeller')
+  confirmAgreementSeller(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmAgreementSeller(idTrade, idSeller, idBuyer);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationAgreementBuyer')
+  confirmAgreementBuyer(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmAgreementBuyer(idTrade, idSeller, idBuyer);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationPayBuyer')
+  confirmPayBuyer(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmPayBuyer(idTrade, idSeller, idBuyer);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationPaySeller')
+  confirmPaySeller(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmPaySeller(idTrade, idSeller, idBuyer);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationReceivedBuyer')
+  confirmReceivedBuyer(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmReceivedBuyer(idTrade, idSeller, idBuyer);
+  }
+  @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationReceivedSeller')
+  confirmReceivedSeller(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmReceivedSeller(idTrade, idSeller, idBuyer);
+  }
+  
   /* 
   @Delete(':id')
   remove(@Param('id') id: string) {

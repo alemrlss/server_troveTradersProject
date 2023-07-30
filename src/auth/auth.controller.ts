@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, NotFoundException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
@@ -20,5 +20,26 @@ export class AuthController {
   @ApiOperation({ summary: 'Login user' })
   loginUser(@Body() userObjectLogin: LoginAuthDto) {
     return this.authService.login(userObjectLogin);
+  }
+  @Post('verification-email')
+  @ApiOperation({ summary: 'Verification email' })
+  verificationEmail(@Body() { email }: RegisterAuthDto) {
+    return this.authService.resendEmail(email);
+  }
+
+  @Get('verify-email/:token')
+  @ApiOperation({ summary: 'Verify email' })
+  async verifyEmail(@Param('token') token: string) {
+    try {
+      await this.authService.verifyEmail(token);
+      return {
+        message:
+          'Your account has been successfully verified. Now you can access all the functions of the application.',
+      };
+    } catch (error) {
+      throw new NotFoundException(
+        'Token de verificación inválido o expirado. Por favor, verifica tu correo electrónico nuevamente.',
+      );
+    }
   }
 }
