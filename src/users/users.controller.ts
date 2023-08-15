@@ -40,7 +40,6 @@ import * as fs from 'fs';
 import { join } from 'path';
 import { UpdateUserDto } from 'src/users/dto/UpdateBasicUserDto';
 import { UpdateRequestDto } from './dto/updateRequestDto.dto';
-import { ObjectId } from 'mongoose';
 
 @ApiTags('Users')
 @Controller('users')
@@ -61,6 +60,12 @@ export class UsersController {
   @ApiParam({ name: 'id', description: 'User ID' })
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
+  }
+
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.usersService.remove(id);
   }
 
   // !return posts by id(retorna los posts de el id pasado en cuestion)
@@ -237,11 +242,29 @@ export class UsersController {
   ) {
     return this.usersService.confirmReceivedSeller(idTrade, idSeller, idBuyer);
   }
-  
+
   /* 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
-  }
+      DASHBOARD END POINTS
   */
+
+  @Post('blockByEmail')
+  blockUser(@Body() { email }) {
+    return this.usersService.blockUser(email);
+  }
+  @Post('desblockByEmail')
+  desblockUser(@Body() { email }) {
+    return this.usersService.desblockUser(email);
+  }
+
+  @Get('block/users')
+  blockedUsers(){
+    return this.usersService.blockedUsers()
+  }
+
+  @Get('dashboard/info')
+  dashboardInfo(){
+    return this.usersService.dashboardInfo()
+  }
+
+  
 }

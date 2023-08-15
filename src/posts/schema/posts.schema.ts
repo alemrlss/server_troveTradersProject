@@ -10,6 +10,17 @@ export enum PostState {
   RECIBO = 'recibo',
   FINALIZADO = 'finalizado',
 }
+export enum Categories {
+  Antiguedades = 'antiguedades',
+  musica = 'musica',
+  cartas = 'cartas',
+  tecnologia = 'tecnologia',
+  comics = 'comics',
+  juguetes = 'juguetes',
+  deporte = 'deporte',
+  libros = 'libros',
+  otros = 'otros',
+}
 @Schema()
 export class Posts {
   @Prop({ required: true })
@@ -32,6 +43,9 @@ export class Posts {
 
   @Prop({ default: Date.now })
   createdAt: Date;
+
+  @Prop({ required: true })
+  category: Categories;
 }
 
 export const PostsSchema = SchemaFactory.createForClass(Posts);

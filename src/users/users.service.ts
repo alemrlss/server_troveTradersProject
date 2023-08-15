@@ -36,6 +36,23 @@ export class UsersService {
     }
   }
 
+  async remove(id: string) {
+    if (!mongoose.isValidObjectId(id))
+      throw new HttpException('ID_NOT_FOUND', 404);
+
+    try {
+      // Search user in BD
+      const user = await this.usersModel.findByIdAndDelete(id);
+      if (!user) {
+        throw new HttpException('ID_NOT_FOUND_OBJECT', 403);
+      }
+      return user;
+    } catch (error) {
+      // Error
+      throw new HttpException('ID_NOT_FOUND_OBJECT', 403);
+    }
+  }
+
   //! find posts by Userid
   async findPostById(id: string) {
     if (!mongoose.isValidObjectId(id))
@@ -425,6 +442,80 @@ export class UsersService {
     await buyer.save();
 
     return { success: true, message: 'Trade Received confirmed by Seller' };
+  }
+
+  /* 
+      DASHBOARD END POINTS
+  */
+
+  async blockUser(email: string) {
+    try {
+      // Search user in BD
+      const user = await this.usersModel.findOne({ email }).exec();
+
+      if (!user) {
+        throw new HttpException('USER_NOT_FOUND', 404);
+      }
+
+      if (user.blocked === true) {
+        throw new HttpException('ALREADY_HAS_BLOCKED', 403);
+      }
+
+      user.blocked = true;
+      await user.save();
+      return user;
+    } catch (error) {
+      // Error
+      return error;
+    }
+  }
+
+  async desblockUser(email: string) {
+    try {
+      // Search user in BD
+      const user = await this.usersModel.findOne({ email }).exec();
+
+      if (!user) {
+        throw new HttpException('USER_NOT_FOUND', 404);
+      }
+
+      user.blocked = false;
+      await user.save();
+      return user;
+    } catch (error) {
+      // Error
+      return error;
+    }
+  }
+
+  async blockedUsers() {
+    const users = await this.usersModel.find({ blocked: true }).exec();
+    return users;
+  }
+
+  async dashboardInfo() {
+    try {
+      const users = await this.usersModel.find();
+      const finishedTradesCount =
+        users.reduce((total, user) => total + user.tradesFinished.length, 0) /
+        2;
+      const ongoingTradesCount =
+        users.reduce((total, user) => total + user.trades.length, 0) / 2;
+
+      const registeredUsersCount = await this.usersModel.countDocuments();
+      const verifiedUsersCount = await this.usersModel.countDocuments({
+        isVerify: true,
+      });
+
+      return {
+        registered: registeredUsersCount,
+        verified: verifiedUsersCount,
+        finishedTradesCount: finishedTradesCount,
+        runningTrades: ongoingTradesCount,
+      };
+    } catch (error) {
+      throw new Error('Error getting users counts');
+    }
   }
 }
 

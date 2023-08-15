@@ -8,10 +8,14 @@ import { hash, compare } from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Admins, AdminsDocument } from 'src/admins/schema/admins.schema';
+import { RegisterAdminAuthDto } from './dto/registerAdmin-auth.dto';
+import { LoginAdminAuthDto } from './dto/loginAdmin-auth.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>,
+    @InjectModel(Users.name) private readonly userModel: Model<UsersDocument>, 
+    @InjectModel(Admins.name) private readonly adminModel: Model<AdminsDocument>,
     private jwtAuthService: JwtService,
     private readonly mailerService: MailerService,
   ) {}
@@ -108,4 +112,42 @@ export class AuthService {
     user.verificationEmail = true;
     await user.save();
   }
+
+  async registerAdmin(adminObject: RegisterAdminAuthDto) {
+    const { email } = adminObject;
+    const findUser = await this.adminModel.findOne({ email: email });
+    if (findUser) throw new HttpException('USER_EXIST', 402);
+    const { password } = adminObject;
+    const plainToHash = await hash(password, 10);
+    adminObject = { ...adminObject, password: plainToHash };
+
+
+
+    return this.adminModel.create(adminObject);
+  }
+  async loginAdmin(adminObjectLogin: LoginAdminAuthDto) {
+    const { email, password } = adminObjectLogin;
+    const findUser = await this.adminModel.findOne({ email: email });
+    if (!findUser) throw new HttpException('USER_NOT_FOUND', 404);
+
+    const checkPassword = await compare(password, findUser.password);
+    if (!checkPassword) throw new HttpException('PASSWORD_INCORRECT', 403);
+
+    const payload = {
+      id: findUser._id,
+      name: findUser.name,
+      lastName: findUser.lastName,
+    };
+    const token = this.jwtAuthService.sign(payload);
+
+
+    const data = {
+      user: findUser,
+      token,
+    };
+
+    delete data.user.password;
+    return data;
+  }
 }
+

@@ -1,6 +1,13 @@
 /* eslint-disable prettier/prettier */
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsBoolean, IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+} from 'class-validator';
+import { Categories } from '../schema/posts.schema';
 
 export class CreatePostDto {
   @IsNotEmpty()
@@ -40,4 +47,8 @@ export class CreatePostDto {
   @IsBoolean()
   @IsNotEmpty()
   confirmationDelivery: boolean;
+
+  @IsEnum(Categories)
+  @ApiProperty({ description: 'category', enum: Categories })
+  category: Categories;
 }

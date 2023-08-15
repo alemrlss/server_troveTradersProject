@@ -28,7 +28,4 @@ import { join } from 'path';
   exports: [UsersService, MongooseModule],
 })
 export class UsersModule {
-  constructor() {
-    console.log(`El dirname es: ${__dirname}`);
-  }
 }

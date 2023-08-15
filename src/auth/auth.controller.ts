@@ -4,6 +4,8 @@ import { AuthService } from './auth.service';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { RegisterAdminAuthDto } from './dto/registerAdmin-auth.dto';
+import { LoginAdminAuthDto } from './dto/loginAdmin-auth.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -42,4 +44,17 @@ export class AuthController {
       );
     }
   }
+
+
+  @Post('registerAdmin')
+  @ApiOperation({ summary: 'Register Admin' })
+  createAdmin(@Body() adminObject: RegisterAdminAuthDto) {
+    return this.authService.registerAdmin(adminObject);
+  }
+  @Post('loginAdmin')
+  @ApiOperation({ summary: 'Login Admin' })
+  loginAdmin(@Body() adminObjectLogin: LoginAdminAuthDto) {
+    return this.authService.loginAdmin(adminObjectLogin);
+  }
+  
 }

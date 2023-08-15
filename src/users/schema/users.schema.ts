@@ -170,6 +170,9 @@ export class Users {
 
   @Prop({ default: false })
   verificationEmail: boolean;
+
+  @Prop({ default: false })
+  blocked: boolean;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

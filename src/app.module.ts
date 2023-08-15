@@ -11,6 +11,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 
 import { MessagesModule } from './messages/messages.module';
 import { AuthModule } from './auth/auth.module';
+import { AdminsModule } from './admins/admins.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { AuthModule } from './auth/auth.module';
     }),
     NotificationsModule,
     MessagesModule,
+    AdminsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

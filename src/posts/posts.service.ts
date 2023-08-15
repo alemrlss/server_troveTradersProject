@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { PostState, Posts, PostsDocument } from './schema/posts.schema';
+import { Categories, PostState, Posts, PostsDocument } from './schema/posts.schema';
 import mongoose, { Model } from 'mongoose';
 import { Users } from 'src/users/schema/users.schema';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -63,8 +63,6 @@ export class PostsService {
 
     if (!mongoose.isValidObjectId(author_id))
       throw new HttpException('ID_NO_VALID', 404);
-    console.log(PostObject);
-    console.log(files);
 
     const photoPaths = [];
     for (const file of files) {
@@ -77,6 +75,11 @@ export class PostsService {
     }
     // Add the photoPaths array to the PostObject
     PostObject.photos = photoPaths;
+
+    // Validate the category
+    if (!Object.values(Categories).includes(PostObject.category)) {
+      throw new HttpException('CATEGORIA_NO_VALIDA', 403);
+    }
     const post = await this.postsModel.create(PostObject);
 
     await this.usersModel.findByIdAndUpdate(author_id, {

@@ -7,6 +7,7 @@ import { Users, UsersSchema } from 'src/users/schema/users.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstanst } from './jwt.constants';
 import { JwtStrategy } from './jwt.strategy';
+import { Admins, AdminsSchema } from 'src/admins/schema/admins.schema';
 
 @Module({
   imports: [
@@ -14,6 +15,12 @@ import { JwtStrategy } from './jwt.strategy';
       {
         name: Users.name,
         schema: UsersSchema,
+      },
+    ]),
+    MongooseModule.forFeature([
+      {
+        name: Admins.name,
+        schema: AdminsSchema,
       },
     ]),
     JwtModule.register({
