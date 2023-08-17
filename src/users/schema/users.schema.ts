@@ -173,6 +173,9 @@ export class Users {
 
   @Prop({ default: false })
   blocked: boolean;
+
+  @Prop({default: null})
+  imageDocument: string;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);

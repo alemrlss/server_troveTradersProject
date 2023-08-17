@@ -444,6 +444,30 @@ export class UsersService {
     return { success: true, message: 'Trade Received confirmed by Seller' };
   }
 
+  async uploadVerify(id: string, file: imagesDto, simulator: string) {
+    if (!mongoose.isValidObjectId(id))
+      throw new HttpException('ID_NOT_VALID', 404);
+    if (simulator !== 'true') {
+      return {
+        success: false,
+        message: 'Document uploaded with verification false',
+      };
+    }
+    const user = await this.usersModel.findById(id);
+    if (!user) {
+      throw new NotFoundException('USER_NOT_FOUND');
+    }
+
+    user.imageDocument = file.filename;
+    user.isVerify = true;
+    const updatedUser = await user.save();
+    return {
+      success: true,
+      message: 'Document uploaded with verification',
+      updatedUser,
+    };
+  }
+
   /* 
       DASHBOARD END POINTS
   */

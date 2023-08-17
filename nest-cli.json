@@ -14,6 +14,11 @@
         "include": "posts/images",
         "outDir": "./dist/posts/images",
         "watchAssets": true
+      },
+      {
+        "include": "users/documents",
+        "outDir": "./dist/users/documents",
+        "watchAssets": true
       }
     ],
     "watchAssets": true

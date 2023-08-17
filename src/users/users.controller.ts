@@ -62,7 +62,6 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
-
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(id);
@@ -243,6 +242,47 @@ export class UsersController {
     return this.usersService.confirmReceivedSeller(idTrade, idSeller, idBuyer);
   }
 
+  @Post('verify/:id/upload-document/:simulator')
+  @ApiOperation({
+    summary:
+      'Post document image(No funciona en swagger ya que no tiene interfaz para cargar archivos). (el parametro simulator es para simular que el usuario esta subiendo un documento de identidad fue bien verificado o no.)',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiProperty({
+    type: 'file',
+    format: 'binary',
+    example: 'https://example.com/sample-image.jpg',
+  })
+  @UseInterceptors(
+    FileInterceptor('document', {
+      storage: diskStorage({
+        destination: (req, file, cb) => {
+          // const destinationFolder = join(__dirname, 'imagesProfile');
+          const destinationFolder = join(
+            process.cwd(),
+            'src',
+            'users',
+            'documents',
+          );
+          fs.mkdirSync(destinationFolder, { recursive: true });
+          cb(null, destinationFolder);
+        },
+        filename: renameImage,
+      }),
+      fileFilter: fileFilter,
+    }),
+  )
+  verifyAccount(
+    @Param('id') id: string,
+    @UploadedFile() file: Express.Multer.File,
+    @Param('simulator') simulator: string,
+  ) {
+    if (!file) {
+      throw new HttpException('NOT_IMAGE_FOUND', 404);
+    }
+    return this.usersService.uploadVerify(id, file, simulator);
+  }
+
   /* 
       DASHBOARD END POINTS
   */
@@ -257,14 +297,12 @@ export class UsersController {
   }
 
   @Get('block/users')
-  blockedUsers(){
-    return this.usersService.blockedUsers()
+  blockedUsers() {
+    return this.usersService.blockedUsers();
   }
 
   @Get('dashboard/info')
-  dashboardInfo(){
-    return this.usersService.dashboardInfo()
+  dashboardInfo() {
+    return this.usersService.dashboardInfo();
   }
-
-  
 }
