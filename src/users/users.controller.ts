@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -40,6 +41,7 @@ import * as fs from 'fs';
 import { join } from 'path';
 import { UpdateUserDto } from 'src/users/dto/UpdateBasicUserDto';
 import { UpdateRequestDto } from './dto/updateRequestDto.dto';
+import { rateUserDto } from './dto/rateUserDto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -281,6 +283,18 @@ export class UsersController {
       throw new HttpException('NOT_IMAGE_FOUND', 404);
     }
     return this.usersService.uploadVerify(id, file, simulator);
+  }
+
+  @Post('rateUser/:id')
+  @ApiOperation({ summary: 'Rate a user by id. Body: newRating and comment.' })
+  @ApiParam({ name: 'id', description: 'User id' })
+  async rateUser(@Param('id') id: string, @Body() rateUserData: rateUserDto) {
+    if (rateUserData.newRating < 0 || rateUserData.newRating > 5) {
+      throw new BadRequestException(
+        'newRating debe estar en el rango de 0 a 5',
+      );
+    }
+    return await this.usersService.rateUser(id, rateUserData);
   }
 
   /* 

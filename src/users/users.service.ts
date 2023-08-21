@@ -6,6 +6,7 @@ import mongoose, { Model, ObjectId } from 'mongoose';
 import { imagesDto } from './dto/imagesDto';
 import { UpdateUserDto } from './dto/UpdateBasicUserDto';
 import { UpdateRequestDto } from './dto/updateRequestDto.dto';
+import { rateUserDto } from './dto/rateUserDto';
 
 @Injectable()
 export class UsersService {
@@ -468,6 +469,37 @@ export class UsersService {
     };
   }
 
+  async rateUser(id: string, rateUserDto: rateUserDto) {
+    if (!mongoose.isValidObjectId(id))
+      throw new HttpException('ID_NOT_VALID', 404);
+
+    const user = await this.usersModel.findById(id);
+    if (!user) {
+      throw new NotFoundException('USER_NOT_FOUND');
+    }
+
+    user.ratings.push({
+      rating: rateUserDto.newRating,
+      comment: rateUserDto.comment,
+      timestamp: new Date(),
+    });
+
+    // Calcular nuevo promedio de rating
+    const totalRatings = user.ratings.length;
+    const totalRatingSum = user.ratings.reduce(
+      (sum, rating) => sum + rating.rating,
+      0,
+    );
+
+    const newRating = totalRatingSum / totalRatings;
+    user.rating = Number(newRating.toFixed(2));
+
+    await user.save();
+    return {
+      message: 'Success',
+      newRating: user.rating,
+    };
+  }
   /* 
       DASHBOARD END POINTS
   */

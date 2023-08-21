@@ -21,6 +21,9 @@ export class Users {
   @Prop({ type: SchemaTypes.ObjectId }) //ID USUARIO
   id: ObjectId;
 
+  @Prop({ type: Date, default: Date.now })
+  createdAt: Date;
+  
   @Prop({})
   name: string;
   @Prop({}) // APELLIDO USUSARIO
@@ -174,8 +177,20 @@ export class Users {
   @Prop({ default: false })
   blocked: boolean;
 
-  @Prop({default: null})
+  @Prop({ default: null })
   imageDocument: string;
+
+  @Prop({ default: 0 })
+  rating: number;
+
+  @Prop([
+    {
+      rating: Number,
+      comment: String,
+      timestamp: Date,
+    },
+  ])
+  ratings: Array<{ rating: number; comment: string; timestamp: Date }>;
 }
 
 export const UsersSchema = SchemaFactory.createForClass(Users);
