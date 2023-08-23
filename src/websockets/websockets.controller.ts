@@ -104,7 +104,7 @@ export class AppGateway
     // Aquí debes actualizar el estado del vendedor en la base de datos, marcarlo como confirmado
     // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del vendedor
     // Por ejemplo:
-    this.server.to(payload.tradeId).emit('sellerConfirmed', {
+    this.server.to(payload.tradeId).emit(`sellerConfirmed_${payload.tradeId}`, {
       message: payload.message,
       messageLocalStorage: payload.messageLocalStorage,
     });
@@ -119,12 +119,10 @@ export class AppGateway
     // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del comprador
     // Por ejemplo:
     console.log(payload.message);
-    this.server
-      .to(payload.tradeId)
-      .emit('buyerConfirmed', {
-        message: payload.message,
-        messageLocalStorage: payload.messageLocalStorage,
-      });
+    this.server.to(payload.tradeId).emit(`buyerConfirmed_${payload.tradeId}`, {
+      message: payload.message,
+      messageLocalStorage: payload.messageLocalStorage,
+    });
   }
 
   @SubscribeMessage('buyerConfirmationPay')
