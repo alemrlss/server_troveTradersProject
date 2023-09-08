@@ -7,7 +7,12 @@ import {
 } from '@nestjs/common';
 import { CreatePostDto } from './dto/create-post.dto';
 import { InjectModel } from '@nestjs/mongoose';
-import { Categories, PostState, Posts, PostsDocument } from './schema/posts.schema';
+import {
+  Categories,
+  PostState,
+  Posts,
+  PostsDocument,
+} from './schema/posts.schema';
 import mongoose, { Model } from 'mongoose';
 import { Users } from 'src/users/schema/users.schema';
 import { UpdatePostDto } from './dto/update-post.dto';
@@ -139,6 +144,14 @@ export class PostsService {
     if (!post) {
       throw new HttpException('POST_NOT_FOUND', 404);
     }
+
+    // Obtén el ID del autor del post
+    const authorId = post.author_id;
+
+    // Elimina el post del arreglo de posts del usuario
+    await this.usersModel.findByIdAndUpdate(authorId, {
+      $pull: { posts: post._id },
+    });
     return post;
   }
 }

@@ -19,5 +19,9 @@ export class UpdateRequestDto {
   payConfirmationSeller: boolean;
   receivedConfirmationBuyer: boolean;
   receivedConfirmationSeller: boolean;
-  
+  isCancel: boolean;
+  whoCanceled: string;
+  inDispute: boolean;
+  alerts: [];
+  deliverDate: Date;
 }

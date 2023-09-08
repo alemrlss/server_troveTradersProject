@@ -6,6 +6,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Users, UsersSchema } from './schema/users.schema';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { DisputesModule } from 'src/disputes/disputes.module';
 
 @Module({
   imports: [
@@ -23,10 +24,10 @@ import { join } from 'path';
       rootPath: join(process.cwd(), 'src', 'users', 'documents'),
       serveRoot: '/image/documents',
     }),
+    DisputesModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService, MongooseModule],
 })
-export class UsersModule {
-}
+export class UsersModule {}

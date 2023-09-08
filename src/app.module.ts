@@ -12,6 +12,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { MessagesModule } from './messages/messages.module';
 import { AuthModule } from './auth/auth.module';
 import { AdminsModule } from './admins/admins.module';
+import { DisputesModule } from './disputes/disputes.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AdminsModule } from './admins/admins.module';
     NotificationsModule,
     MessagesModule,
     AdminsModule,
+    DisputesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

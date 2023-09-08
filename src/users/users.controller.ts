@@ -93,7 +93,7 @@ export class UsersController {
     FileInterceptor('imageProfile', {
       storage: diskStorage({
         destination: (req, file, cb) => {
-          // const destinationFolder = join(__dirname, 'imagesProfile');
+          // const destinationFolder = join(__dirname, 'imagesPrfoile');
           const destinationFolder = join(
             process.cwd(),
             'src',
@@ -191,6 +191,79 @@ export class UsersController {
     return this.usersService.moveTradeToFinish(tradeId, userId);
   }
 
+  //! PETICION PARA ENTRAR EN DISPUTA!! INDISPUTE=TRUE!! PARA EL PAGO
+  @Post('trades/:idTrade/:idSeller/:idBuyer/dispute/pay')
+  disputeTradePay(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.inDisputeTradePay(idTrade, idSeller, idBuyer);
+  }
+  //! PETICION PARA ENTRAR EN DISPUTA!! INDISPUTE=TRUE!! PARA EL RECIBO.
+  @Post('trades/:idTrade/:idSeller/:idBuyer/dispute/received')
+  disputeTradeReceived(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.inDisputeTradeReceived(idTrade, idSeller, idBuyer);
+  }
+  //!! PETICION PARA SALIR DE UNA DISPUTA(CONTIUNUAR TRADE) INDISPUTE=FALSE!!
+  @Post('trades/:idTrade/:idSeller/:idBuyer/continue')
+  continueTrade(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.continueTrade(idTrade, idSeller, idBuyer);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/cancel/:whoCanceled')
+  confirmCancelTrade(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+    @Param('whoCanceled') whoCanceled: string,
+  ) {
+    return this.usersService.confirmCancelTrade(
+      idTrade,
+      idSeller,
+      idBuyer,
+      whoCanceled,
+    );
+  }
+  @Post('trades/:idTrade/:idSeller/:idBuyer/cancel')
+  confirmCancelTradeAdmin(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+  ) {
+    return this.usersService.confirmCancelTradeAdmin(
+      idTrade,
+      idSeller,
+      idBuyer,
+    );
+  }
+
+  @Post('trades/:idTrade/:idUser/cancel/')
+  cancelTradeBuyer(
+    @Param('idTrade') idTrade: string,
+    @Param('idUser') idUser: string,
+  ) {
+    return this.usersService.cancelTradeBuyer(idTrade, idUser);
+  }
+
+  @Post('trades/:idTrade/:idSeller/:idBuyer/deliverDate')
+  deliverDate(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+    @Body('days') days: number,
+  ) {
+    return this.usersService.deliverDate(idTrade, idSeller, idBuyer, days);
+  }
+
   @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationAgreementSeller')
   confirmAgreementSeller(
     @Param('idTrade') idTrade: string,
@@ -235,6 +308,7 @@ export class UsersController {
   ) {
     return this.usersService.confirmReceivedBuyer(idTrade, idSeller, idBuyer);
   }
+
   @Post('trades/:idTrade/:idSeller/:idBuyer/confirmationReceivedSeller')
   confirmReceivedSeller(
     @Param('idTrade') idTrade: string,
@@ -297,10 +371,38 @@ export class UsersController {
     return await this.usersService.rateUser(id, rateUserData);
   }
 
+  @Post('disputes/:idTrade/:idSeller/:idBuyer')
+  handleAlertPay(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+    @Body('message') message: string,
+    @Body('role') role: string,
+    @Body('disputeId') disputeId: string,
+  ) {
+    return this.usersService.handleAlertPay(
+      idTrade,
+      idSeller,
+      idBuyer,
+      message,
+      role,
+      disputeId,
+    );
+  }
+
+  @Delete('disputes/:idTrade/:idSeller/:idBuyer')
+  deleteAlertPay(
+    @Param('idTrade') idTrade: string,
+    @Param('idSeller') idSeller: string,
+    @Param('idBuyer') idBuyer: string,
+
+    @Body('role') role: string,
+  ) {
+    return this.usersService.deleteAlertPay(idTrade, idSeller, idBuyer, role);
+  }
   /* 
       DASHBOARD END POINTS
   */
-
   @Post('blockByEmail')
   blockUser(@Body() { email }) {
     return this.usersService.blockUser(email);

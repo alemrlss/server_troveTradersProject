@@ -7,7 +7,7 @@ export const canUpdateState = (
     case 'disponible':
       return newState === 'acuerdo';
     case 'acuerdo':
-      return newState === 'pago';
+      return newState === 'pago' || newState === 'disponible';
     case 'pago':
       return newState === 'recibo';
     case 'recibo':

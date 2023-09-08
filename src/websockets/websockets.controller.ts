@@ -33,7 +33,7 @@ export class AppGateway
 
   //? ESTA FUNCION SE EJECUTA APENAS INICA EL SERVIDOR WEBSOCKETS.
   afterInit(server: any) {
-    console.log('Esto se ejecuta cuando inicia');
+    return console.log('Servidor de websockets iniciado...');
   }
 
   //? Funcion se ejecuta cuando un cliente se conecta del websocket...
@@ -90,12 +90,87 @@ export class AppGateway
       username: username,
       createdAt: new Date(),
     };
-
     await this.messagesService.createMessage(newMessage);
 
     this.server.to(tradeId).emit('message', newMessage);
   }
 
+  @SubscribeMessage('deliverTime')
+  handleDeliverTime(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    console.log('yes', payload);
+    this.server.to(payload.tradeId).emit(`deliverTime_${payload.tradeId}`, {
+      message: payload.message,
+    });
+  }
+  @SubscribeMessage('alert')
+  handleAlert(
+    client: Socket,
+    payload: { tradeId: string; role: string; message: string },
+  ) {
+    this.server.to(payload.tradeId).emit(`alert_${payload.tradeId}`, {
+      role: payload.role,
+      message: payload.message,
+    });
+  }
+  @SubscribeMessage('alertReceived')
+  handleAlertReceived(
+    client: Socket,
+    payload: { tradeId: string; role: string; message: string },
+  ) {
+    this.server.to(payload.tradeId).emit(`alertReceived_${payload.tradeId}`, {
+      role: payload.role,
+      message: payload.message,
+    });
+  }
+
+  @SubscribeMessage('adminCancel')
+  handleAdminCancel(
+    client: Socket,
+    payload: { tradeId: string; role: string; message: string },
+  ) {
+    this.server.to(payload.tradeId).emit(`adminCancel_${payload.tradeId}`, {
+      role: payload.role,
+      message: payload.message,
+    });
+  }
+  @SubscribeMessage('adminContinue')
+  handleAdminContinue(
+    client: Socket,
+    payload: { tradeId: string; role: string; message: string },
+  ) {
+    this.server.to(payload.tradeId).emit(`adminContinue_${payload.tradeId}`, {
+      role: payload.role,
+      message: payload.message,
+    });
+  }
+
+  @SubscribeMessage('sellerCancel')
+  handleSellerCancel(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    // Aquí debes actualizar el estado del vendedor en la base de datos, marcarlo como confirmado
+    // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del vendedor
+    // Por ejemplo:
+    this.server.to(payload.tradeId).emit(`sellerCancel_${payload.tradeId}`, {
+      message: payload.message,
+    });
+  }
+  @SubscribeMessage('buyerCancel')
+  handleBuyerCancel(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    // Aquí debes actualizar el estado del vendedor en la base de datos, marcarlo como confirmado
+    // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del vendedor
+    // Por ejemplo:
+    this.server.to(payload.tradeId).emit(`buyerCancel_${payload.tradeId}`, {
+      message: payload.message,
+    });
+  }
   @SubscribeMessage('sellerConfirmed')
   handleSellerConfirmed(
     client: Socket,
@@ -118,7 +193,6 @@ export class AppGateway
     // Aquí debes actualizar el estado del comprador en la base de datos, marcarlo como confirmado
     // También puedes emitir un evento a todos los clientes en la sala del tradeId para informarles sobre la confirmación del comprador
     // Por ejemplo:
-    console.log(payload.message);
     this.server.to(payload.tradeId).emit(`buyerConfirmed_${payload.tradeId}`, {
       message: payload.message,
       messageLocalStorage: payload.messageLocalStorage,
@@ -126,17 +200,57 @@ export class AppGateway
   }
 
   @SubscribeMessage('buyerConfirmationPay')
-  handleBuyerConfirmationPay(client: Socket, payload: any) {
+  handleBuyerConfirmationPay(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
     // Lógica al recibir el evento 'compradorConfirmado'
     // Puedes emitir eventos de confirmación o realizar otras acciones
-    this.server.emit('buyerConfirmationPay');
+    this.server
+      .to(payload.tradeId)
+      .emit(`buyerConfirmationPay_${payload.tradeId}`, {
+        message: payload.message,
+      });
   }
 
   @SubscribeMessage('sellerConfirmationPay')
-  handleSellerConfirmationPay(client: Socket, payload: any) {
+  handleSellerConfirmationPay(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
     // Lógica al recibir el evento 'vendedorConfirmado'
     // Puedes emitir eventos de confirmación o realizar otras acciones
-    this.server.emit('sellerConfirmationPay');
+    this.server
+      .to(payload.tradeId)
+      .emit(`sellerConfirmationPay_${payload.tradeId}`, {
+        message: payload.message,
+      });
+  }
+  @SubscribeMessage('sellerDisputePay')
+  handleSellerDisputePay(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    // Lógica al recibir el evento 'vendedorConfirmado'
+    // Puedes emitir eventos de confirmación o realizar otras acciones
+    this.server
+      .to(payload.tradeId)
+      .emit(`sellerDisputePay_${payload.tradeId}`, {
+        message: payload.message,
+      });
+  }
+  @SubscribeMessage('buyerDisputeReceived')
+  handleBuyerDisputeReceived(
+    client: Socket,
+    payload: { tradeId: string; message: string },
+  ) {
+    // Lógica al recibir el evento 'vendedorConfirmado'
+    // Puedes emitir eventos de confirmación o realizar otras acciones
+    this.server
+      .to(payload.tradeId)
+      .emit(`buyerDisputeReceived_${payload.tradeId}`, {
+        message: payload.message,
+      });
   }
 
   @SubscribeMessage('buyerConfirmationReceived')

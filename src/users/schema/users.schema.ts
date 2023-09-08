@@ -23,7 +23,7 @@ export class Users {
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
-  
+
   @Prop({})
   name: string;
   @Prop({}) // APELLIDO USUSARIO
@@ -86,6 +86,11 @@ export class Users {
       nameBuyer: { type: String },
       nameSeller: { type: String },
       titlePost: { type: String },
+      alerts: {
+        type: [{ role: String, message: String, disputeId: String }],
+        default: [],
+      },
+      deliverDate: { type: Date },
     },
   ])
   requests: {
@@ -104,6 +109,11 @@ export class Users {
     payConfirmationSeller: boolean;
     receivedConfirmationBuyer: boolean;
     receivedConfirmationSeller: boolean;
+    isCancel: boolean;
+    whoCanceled: string;
+    inDispute: boolean;
+    alerts: { role: string; message: string; disputeId: string }[];
+    deliverDate: Date;
   }[];
 
   @Prop([
@@ -122,6 +132,14 @@ export class Users {
       payConfirmationSeller: { type: Boolean, default: false },
       receivedConfirmationBuyer: { type: Boolean, default: false },
       receivedConfirmationSeller: { type: Boolean, default: false },
+      isCancel: { type: Boolean, default: false },
+      whoCanceled: { type: String },
+      inDispute: { type: Boolean, default: false },
+      alerts: {
+        type: [{ role: String, message: String, disputeId: String }],
+        default: [],
+      },
+      deliverDate: { type: Date },
     },
   ])
   trades: {
@@ -140,6 +158,11 @@ export class Users {
     payConfirmationSeller: boolean;
     receivedConfirmationBuyer: boolean;
     receivedConfirmationSeller: boolean;
+    isCancel: boolean;
+    whoCanceled: string;
+    inDispute: boolean;
+    alerts: { role: string; message: string; disputeId: string }[];
+    deliverDate: Date;
   }[];
 
   @Prop([
@@ -154,6 +177,9 @@ export class Users {
       titlePost: { type: String },
       payConfirmationBuyer: { type: Boolean, default: false },
       payConfirmationSeller: { type: Boolean, default: false },
+      isCancel: { type: Boolean, default: false },
+      whoCanceled: { type: String },
+      inDispute: { type: String, default: false },
     },
   ])
   tradesFinished: {
