@@ -55,7 +55,7 @@ export class Users {
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Posts' }] })
   posts: Posts[];
 
-  @Prop({ default: 'test.png' })
+  @Prop({})
   imageProfile: string;
 
   @Prop({ default: false })
