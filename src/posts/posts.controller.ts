@@ -50,6 +50,13 @@ export class PostsController {
   async findOne(@Param('id') id: string) {
     return await this.postsService.findOne(id);
   }
+  //! get posts by userid
+  @Get('/user-posts/:id')
+  @ApiOperation({ summary: 'Obtener los posts de un usuario específico' })
+  @ApiParam({ name: 'id', description: 'Post ID' })
+  async getPostsbyUserId(@Param('id') id: string) {
+    return await this.postsService.getPostsbyUserId(id);
+  }
 
   //!create post with photos
   @Post()

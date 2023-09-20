@@ -44,6 +44,12 @@ export class PostsService {
     }
   }
 
+  async getPostsbyUserId(id: string) {
+    return await this.postsModel.find({
+      author_id: id,
+      currentState: 'disponible',
+    });
+  }
   //create posts and push in the userModel
   async create(PostObject: CreatePostDto) {
     const { author_id } = PostObject;
