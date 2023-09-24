@@ -6,6 +6,7 @@ import { LoginAuthDto } from './dto/login-auth.dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { RegisterAdminAuthDto } from './dto/registerAdmin-auth.dto';
 import { LoginAdminAuthDto } from './dto/loginAdmin-auth.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -44,8 +45,18 @@ export class AuthController {
       );
     }
   }
+  //edit y recover
+  @Post('edit-password/:id')
+  async changePassword(@Param('id') id: string, @Body() changePasswordDto: ChangePasswordDto) {
+    return await this.authService.changePassword(id, changePasswordDto);
+  }
 
-
+  @Post('recovery-email')
+  @ApiOperation({ summary: 'Recovery Email' })
+  recoveryEmail(@Body() { email }: RegisterAuthDto) {
+    return this.authService.sendRecoveryEmail(email);
+  }
+  
   @Post('registerAdmin')
   @ApiOperation({ summary: 'Register Admin' })
   createAdmin(@Body() adminObject: RegisterAdminAuthDto) {
