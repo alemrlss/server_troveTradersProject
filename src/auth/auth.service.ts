@@ -1,16 +1,19 @@
 /* eslint-disable prettier/prettier */
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Users, UsersDocument } from 'src/users/schema/users.schema';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { hash, compare } from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Admins, AdminsDocument } from 'src/admins/schema/admins.schema';
 import { RegisterAdminAuthDto } from './dto/registerAdmin-auth.dto';
 import { LoginAdminAuthDto } from './dto/loginAdmin-auth.dto';
+import { ChangePasswordDto } from './dto/changePassword.dto';
+
 @Injectable()
 export class AuthService {
   constructor(
@@ -148,6 +151,38 @@ export class AuthService {
 
     delete data.user.password;
     return data;
+  }
+  ///se debe validarla contra
+  async changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
+    console.log('User ID:', id);
+    console.log('Change Password DTO:', changePasswordDto);
+
+    try {
+      // Find the user by id in the database
+      const user = await this.userModel.findById(id);
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+      console.log('User Information:', user);
+      console.log('Password:', changePasswordDto.password)
+      console.log('hashed:', user.password)
+      // Compare the provided password with the stored hashed password
+      const isPasswordMatch = await bcrypt.compare(changePasswordDto.password, user.password);
+      console.log('true or false:', isPasswordMatch)
+      
+      if (!isPasswordMatch) {
+        return false;
+      }
+
+      const newPasswordHash = await bcrypt.hash(changePasswordDto.newPassword, 10);
+      user.password = newPasswordHash;
+      await user.save();
+      return true;
+
+    } catch (error) {
+      throw error;
+    }
   }
 }
 
