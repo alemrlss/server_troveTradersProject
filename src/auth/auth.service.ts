@@ -184,5 +184,34 @@ export class AuthService {
       throw error;
     }
   }
+
+  async sendRecoveryEmail(email: string) {
+    const user = await this.userModel.findOne({ email }).exec();
+    if (!user) throw new HttpException('USER_NOT_FOUND', 404);
+
+    const recoveryToken = await this.generateVerificationToken(
+      user._id.toString(),
+    );
+
+    await this.sendRecovery(user.email, recoveryToken);
+
+    return { message: 'Correo de Recuperacion enviado' };
+  }
+
+  async sendRecovery(userEmail, recoveryLink) {
+    try {
+      this.mailerService.sendMail({
+        to: userEmail,
+        from: 'alejandroaml0528@gmail.com',
+        subject: 'Recupera tu contraseña',
+        html: 
+        `<p>Hola,</p>
+        <p>Has solicitado la recuperacion de tu contraseña: </p>
+        <a href="http://localhost:5173/recover-password/${recoveryLink}/test">Cambia tu contraseña.</a>`,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
