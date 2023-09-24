@@ -17,7 +17,7 @@ export enum Categories {
   tecnologia = 'tecnologia',
   comics = 'comics',
   juguetes = 'juguetes',
-  deporte = 'deporte',
+  deportes = 'deportes',
   libros = 'libros',
   otros = 'otros',
 }
