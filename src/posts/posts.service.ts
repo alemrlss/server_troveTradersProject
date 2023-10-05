@@ -107,7 +107,10 @@ export class PostsService {
 
   //return only posts available
   async getAllAvailablePosts() {
-    return this.postsModel.find({ currentState: 'disponible' });
+    const posts = await this.postsModel.find({ currentState: 'disponible' });
+    const postsReversed = posts.reverse();
+
+    return postsReversed;
   }
   //update state POST
   async updateStatePost(postId: string, updatePostDto: UpdateStateDto) {

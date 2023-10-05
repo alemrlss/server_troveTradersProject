@@ -8,6 +8,7 @@ import { UpdateUserDto } from './dto/UpdateBasicUserDto';
 import { UpdateRequestDto } from './dto/updateRequestDto.dto';
 import { rateUserDto } from './dto/rateUserDto';
 import { DisputesService } from 'src/disputes/disputes.service';
+import { CompleteRegisterDto } from './dto/completeRegisterDto';
 
 @Injectable()
 export class UsersService {
@@ -103,6 +104,21 @@ export class UsersService {
     user.lastName = updateUserDto.lastName;
     user.username = updateUserDto.username;
     user.gender = updateUserDto.gender;
+    await user.save();
+
+    return user;
+  }
+
+  async completeRegister(id: string, completeRegisterDto: CompleteRegisterDto) {
+    const user = await this.usersModel.findById(id);
+    if (!user) {
+      // Manejar el caso de usuario no encontrdado
+      throw new NotFoundException('Users_Not_Found');
+    }
+    user.address = completeRegisterDto.address;
+    user.gender = completeRegisterDto.gender;
+    user.phone = completeRegisterDto.phone;
+    user.registrationCompleted = true;
     await user.save();
 
     return user;

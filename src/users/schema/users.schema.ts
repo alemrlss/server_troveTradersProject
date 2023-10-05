@@ -6,8 +6,8 @@ import { Posts } from 'src/posts/schema/posts.schema';
 export type UsersDocument = HydratedDocument<Users>;
 
 export enum Genders {
-  Female = 'female',
-  Male = 'male',
+  Female = 'femenino',
+  Male = 'masculino',
   Unknown = 'unknown',
 }
 
@@ -42,7 +42,6 @@ export class Users {
   phone: string;
 
   @Prop({
-    //GENERO USUARIO
     type: String,
     enum: Genders,
     default: Genders.Unknown,
@@ -208,6 +207,12 @@ export class Users {
 
   @Prop({ default: 0 })
   rating: number;
+
+  @Prop({})
+  address: string;
+
+  @Prop({ default: false })
+  registrationCompleted: boolean;
 
   @Prop([
     {

@@ -42,6 +42,7 @@ import { join } from 'path';
 import { UpdateUserDto } from 'src/users/dto/UpdateBasicUserDto';
 import { UpdateRequestDto } from './dto/updateRequestDto.dto';
 import { rateUserDto } from './dto/rateUserDto';
+import { CompleteRegisterDto } from './dto/completeRegisterDto';
 
 @ApiTags('Users')
 @Controller('users')
@@ -130,6 +131,17 @@ export class UsersController {
   ) {
     return await this.usersService.updateUser(id, updateUserDto);
   }
+
+
+//! Complete register
+@Post(':id/completeRegister')
+async completeRegister(
+  @Param('id') id: string,
+  @Body() completeRegisterDto: CompleteRegisterDto,
+) {
+  return await this.usersService.completeRegister(id, completeRegisterDto);
+}
+
 
   //?pushes requests to user
   @Post(':id/requests')
