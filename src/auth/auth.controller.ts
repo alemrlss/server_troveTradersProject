@@ -45,10 +45,15 @@ export class AuthController {
       );
     }
   }
-  //edit y recover
+  
   @Post('edit-password/:id')
   async changePassword(@Param('id') id: string, @Body() changePasswordDto: ChangePasswordDto) {
     return await this.authService.changePassword(id, changePasswordDto);
+  }
+
+  @Post('recover-password/:token')
+  async changePasswordbyToken(@Param('token') token: string, @Body() changePasswordDto: ChangePasswordDto) {
+    return await this.authService.changePasswordbyToken(token, changePasswordDto);
   }
 
   @Post('recovery-email')
