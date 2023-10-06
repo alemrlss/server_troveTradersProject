@@ -147,6 +147,12 @@ export class PostsController {
   remove(@Param('id') id: string) {
     return this.postsService.remove(id);
   }
+
+  @Get('categories/count')
+  async getPostCountByCategory() {
+    const postCounts = await this.postsService.getPostCountByCategory();
+    return postCounts;
+  }
   /*
 
   @Get(':id')

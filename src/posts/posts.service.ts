@@ -163,4 +163,24 @@ export class PostsService {
     });
     return post;
   }
+
+  async getPostCountByCategory() {
+    const pipeline = [
+      {
+        $group: {
+          _id: '$category',
+          count: { $sum: 1 },
+        },
+      },
+    ];
+
+    const result = await this.postsModel.aggregate(pipeline).exec();
+
+    const postCounts = result.map((entry) => ({
+      name: entry._id,
+      value: entry.count,
+    }));
+
+    return postCounts;
+  }
 }
