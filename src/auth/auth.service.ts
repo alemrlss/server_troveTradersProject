@@ -5,15 +5,15 @@ import { Model } from 'mongoose';
 import { Users, UsersDocument } from 'src/users/schema/users.schema';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { hash, compare } from 'bcrypt';
-import * as bcrypt from 'bcrypt';
-import { LoginAuthDto } from './dto/login-auth.dto';
+import * as bcrypt from 'bcrypt'; 
+import { LoginAuthDto } from './dto/login-auth.dto'; 
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Admins, AdminsDocument } from 'src/admins/schema/admins.schema';
 import { RegisterAdminAuthDto } from './dto/registerAdmin-auth.dto';
 import { LoginAdminAuthDto } from './dto/loginAdmin-auth.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
-
+ 
 @Injectable()
 export class AuthService {
   constructor(
@@ -152,13 +152,14 @@ export class AuthService {
     delete data.user.password;
     return data;
   }
-  ///se debe validarla contra
+
   async changePassword(id: string, changePasswordDto: ChangePasswordDto): Promise<boolean> {
+    console.log('changePassword')
     console.log('User ID:', id);
     console.log('Change Password DTO:', changePasswordDto);
 
     try {
-      // Find the user by id in the database
+
       const user = await this.userModel.findById(id);
 
       if (!user) {
@@ -167,7 +168,7 @@ export class AuthService {
       console.log('User Information:', user);
       console.log('Password:', changePasswordDto.password)
       console.log('hashed:', user.password)
-      // Compare the provided password with the stored hashed password
+
       const isPasswordMatch = await bcrypt.compare(changePasswordDto.password, user.password);
       console.log('true or false:', isPasswordMatch)
       
@@ -182,6 +183,31 @@ export class AuthService {
 
     } catch (error) {
       throw error;
+    }
+  }
+
+  async changePasswordbyToken(token:string,changePasswordDto: ChangePasswordDto): Promise<boolean> {
+    console.log('changePasswordByToken')
+    try {
+    console.log('Received Token:', token);
+
+    const decodedToken = this.jwtAuthService.verify(token);
+    console.log('Decoded Token:', decodedToken);
+    const userId = decodedToken.sub;
+
+    const user = await this.userModel.findById(userId).exec();
+    if (!user) {
+      throw new NotFoundException('Usuario no encontrado');
+    }
+    console.log('User Information:', user);
+    const newPasswordHash = await bcrypt.hash(changePasswordDto.newPassword, 10);
+    user.password = newPasswordHash;
+    await user.save();
+    
+    return true;
+    } catch (error) {
+      console.error('Error:', error);
+      throw error; 
     }
   }
 
