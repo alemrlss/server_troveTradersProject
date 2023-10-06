@@ -5,15 +5,15 @@ import { Model } from 'mongoose';
 import { Users, UsersDocument } from 'src/users/schema/users.schema';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { hash, compare } from 'bcrypt';
-import * as bcrypt from 'bcrypt';
-import { LoginAuthDto } from './dto/login-auth.dto';
+import * as bcrypt from 'bcrypt'; 
+import { LoginAuthDto } from './dto/login-auth.dto'; 
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Admins, AdminsDocument } from 'src/admins/schema/admins.schema';
 import { RegisterAdminAuthDto } from './dto/registerAdmin-auth.dto';
 import { LoginAdminAuthDto } from './dto/loginAdmin-auth.dto';
 import { ChangePasswordDto } from './dto/changePassword.dto';
-
+ 
 @Injectable()
 export class AuthService {
   constructor(
